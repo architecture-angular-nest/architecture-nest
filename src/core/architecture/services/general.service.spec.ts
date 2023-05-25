@@ -5,11 +5,11 @@ import {
 import { Repository } from 'typeorm';
 import { AuditEntity } from '../entities/audit-entity.entity';
 import { GeneralEntity } from '../entities/general-entity.entity';
-import { GeneralService } from './general.service';
 import { Test } from '@nestjs/testing';
 import { getRepositoryToken } from '@nestjs/typeorm';
 import { ActionAuditEnum } from '../enums/action-audit.enum';
 import { HttpException, HttpStatus } from '@nestjs/common';
+import { GeneralService } from './general.service';
 
 describe('GeneralService', () => {
   let generalService: GeneralService<GeneralEntity, AuditEntity>;
@@ -19,7 +19,6 @@ describe('GeneralService', () => {
   beforeEach(async () => {
     const moduleRef = await Test.createTestingModule({
       providers: [
-        GeneralService,
         {
           provide: getRepositoryToken(GeneralEntity),
           useValue: {

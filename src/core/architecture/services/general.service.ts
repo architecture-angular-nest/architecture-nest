@@ -1,23 +1,26 @@
-import { HttpException, HttpStatus } from '@nestjs/common';
+import { HttpException, HttpStatus, Inject } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 
-import { UtilityService } from './utility.service';
 import { Repository } from 'typeorm';
+import { GeneralEntity } from '../entities/general-entity.entity';
+import { UtilityService } from './../../../shared/services/utility.service';
 import { AuditEntity } from '../entities/audit-entity.entity';
 import { ActionAuditEnum } from '../enums/action-audit.enum';
-import { GeneralEntity } from '../entities/general-entity.entity';
+
 
 export abstract class GeneralService<
   Entity extends GeneralEntity,
   EntityToAudit extends AuditEntity,
 > {
+  @Inject(UtilityService)
+  protected readonly utilityService: UtilityService
+
   constructor(
     @InjectRepository(GeneralEntity)
     protected entityRepository: Repository<Entity>,
     @InjectRepository(AuditEntity)
     protected auditRepository: Repository<EntityToAudit>,
-    protected readonly utilityService: UtilityService,
-  ) {}
+  ) { }
 
   public async create(
     createEntityDto: Partial<Entity>,
@@ -96,8 +99,8 @@ export abstract class GeneralService<
         entity.id,
         lastChange.length > 0
           ? {
-              ...lastChange[0].newValue,
-            }
+            ...lastChange[0].newValue,
+          }
           : null,
         entity as object,
         actionDescription,
@@ -141,8 +144,8 @@ export abstract class GeneralService<
         entity.id,
         lastChange.length > 0
           ? {
-              ...lastChange[0].newValue,
-            }
+            ...lastChange[0].newValue,
+          }
           : null,
         entity as object,
         actionDescription,
@@ -181,19 +184,19 @@ export abstract class GeneralService<
     });
 
     try {
-      await this.entityRepository.remove(entity);
       await this.logChange(
         ActionAuditEnum.DELETE,
         actionDoneBy,
         entity.id,
         lastChange.length > 0
           ? {
-              ...lastChange[0].newValue,
-            }
+            ...lastChange[0].newValue,
+          }
           : null,
         entity as object,
         actionDescription,
       );
+      await this.entityRepository.remove(entity);
     } catch (error) {
       throw new HttpException(
         'Ação não realizada erro ao cadastrar log',
