@@ -62,7 +62,7 @@ export abstract class CrudService<
         actionDescription?: string
     ): Promise<Entity> {
         return this.update(
-            { id, ...updateEntityDto },
+            { id: +id, ...updateEntityDto },
             actionDoneBy,
             actionDescription
         );

@@ -211,7 +211,7 @@ export abstract class GeneralService<
     argument: object,
     actionDoneBy?: ID,
     actionDescription?: string,
-  ): Promise<void> {
+  ): Promise<Entity> {
     const entity: Entity = await this.entityRepository.findOne({
       withDeleted: true,
       ...argument,
@@ -234,6 +234,8 @@ export abstract class GeneralService<
         newValue as object,
         actionDescription,
       );
+
+      return newValue;
     } catch (error) {
       throw new HttpException(
         'Ação não realizada erro ao cadastrar log',

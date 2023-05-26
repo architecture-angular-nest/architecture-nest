@@ -7,7 +7,7 @@ import { GeneralEntity } from "../entities/general-entity.entity";
 import { PaginatedList } from "../interfaces/paginated-list";
 import { ActionAuditEnum } from "../enums/action-audit.enum";
 import { CrudService } from './crud.service';
-import { ServiceOtherOperations } from '../interfaces/other-operations';
+import { ServiceOtherOperations } from '../interfaces/service-other-operations';
 
 export abstract class CrudAndOtherOperationsService<
     Entity extends GeneralEntity,

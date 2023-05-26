@@ -28,7 +28,7 @@ export interface ServiceGeneralOperations<Entity, EntityToAudit, ID> {
         argument: object,
         actionDoneBy?: ID,
         actionDescription?: string,
-    ): Promise<void>;
+    ): Promise<Entity>;
 
     logChange(
         action: string,
