@@ -4,9 +4,10 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { Exemplo } from './entities/exemplo.entity';
 import { ExemploAudit } from './entities/exemplo-audit.entity';
-import { CrudService } from './../core/architecture/services/crud.service';
+import { CrudAndOtherOperationsService } from 'src/core/architecture/services/crud-and-ohter-operations.service';
 @Injectable()
-export class ExemploService extends CrudService<Exemplo, ExemploAudit, number> {
+export class ExemploService
+  extends CrudAndOtherOperationsService<Exemplo, ExemploAudit, EntityId> {
 
   constructor(
     @InjectRepository(Exemplo)

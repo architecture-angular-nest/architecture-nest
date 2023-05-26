@@ -1,7 +1,9 @@
-export interface CrudServiceOperations<Entity, EntityToAudit, ID> {
+import { PaginatedList } from "./paginated-list";
+
+export interface CrudServiceOperations<Entity, ID> {
     createEntity(
         createEntityDto: Partial<Entity>,
-        actionDoneBy?: number,
+        actionDoneBy?: ID,
     ): Promise<Entity>;
 
     findAllEntity(argument?: object): Promise<Entity[]>;
@@ -16,7 +18,7 @@ export interface CrudServiceOperations<Entity, EntityToAudit, ID> {
     updateEntity(
         id: ID,
         updateEntityDto: Partial<Entity>,
-        actionDoneBy?: number,
+        actionDoneBy?: ID,
         actionDescription?: string
     ): Promise<Entity>;
 

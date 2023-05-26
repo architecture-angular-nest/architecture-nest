@@ -1,6 +1,6 @@
 import { InjectRepository } from "@nestjs/typeorm";
 
-import { FindOptionsWhere, Repository } from "typeorm";
+import { Repository } from "typeorm";
 import { AuditEntity } from "../entities/audit-entity.entity";
 import { GeneralEntity } from "../entities/general-entity.entity";
 import { GeneralService } from "./general.service";
@@ -11,8 +11,8 @@ export abstract class CrudService<
     Entity extends GeneralEntity,
     EntityToAudit extends AuditEntity,
     ID>
-    extends GeneralService<Entity, EntityToAudit>
-    implements CrudServiceOperations<Entity, EntityToAudit, ID> {
+    extends GeneralService<Entity, EntityToAudit, ID>
+    implements CrudServiceOperations<Entity, ID> {
 
     constructor(
         @InjectRepository(GeneralEntity)
@@ -25,7 +25,7 @@ export abstract class CrudService<
 
     public createEntity(
         createEntityDto: Partial<Entity>,
-        actionDoneBy?: number,
+        actionDoneBy?: ID,
     ): Promise<Entity> {
         return this.create(createEntityDto, actionDoneBy);
     }
@@ -58,7 +58,7 @@ export abstract class CrudService<
     public updateEntity(
         id: ID,
         updateEntityDto: Partial<Entity>,
-        actionDoneBy?: number,
+        actionDoneBy?: ID,
         actionDescription?: string
     ): Promise<Entity> {
         return this.update(
@@ -69,46 +69,8 @@ export abstract class CrudService<
     }
 
     public removeEntity(id: ID): Promise<void> {
-        return this.delete({
+        return this.softDelete({
             where: { id }
         });
-    }
-
-    public async findOneEntityLogsWithPaginator(
-        entityId: ID,
-        page: number,
-        limit: number
-    ) {
-        const [data, total] = await this.auditRepository.findAndCount({
-            take: limit,
-            skip: (page - 1) * limit,
-            where: { entityId: entityId } as FindOptionsWhere<EntityToAudit> | FindOptionsWhere<EntityToAudit>[],
-        });
-
-        return { data, total };
-    }
-
-    public async findOneEntityLogs(
-        entityId: ID,
-    ): Promise<AuditEntity[]> {
-        return this.auditRepository.find({
-            where: { entityId: entityId } as FindOptionsWhere<EntityToAudit> | FindOptionsWhere<EntityToAudit>[]
-        });
-    }
-
-    public async findEntityLogsWithPaginator(
-        page: number,
-        limit: number
-    ) {
-        const [data, total] = await this.auditRepository.findAndCount({
-            take: limit,
-            skip: (page - 1) * limit,
-        });
-
-        return { data, total };
-    }
-
-    public async findEntityLogs(argument?: object): Promise<AuditEntity[]> {
-        return this.auditRepository.find(argument);
     }
 }

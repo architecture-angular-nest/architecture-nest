@@ -6,12 +6,14 @@ import { GeneralEntity } from '../entities/general-entity.entity';
 import { UtilityService } from './../../../shared/services/utility.service';
 import { AuditEntity } from '../entities/audit-entity.entity';
 import { ActionAuditEnum } from '../enums/action-audit.enum';
+import { ServiceGeneralOperations } from '../interfaces/general-service-operations';
 
 
 export abstract class GeneralService<
   Entity extends GeneralEntity,
   EntityToAudit extends AuditEntity,
-> {
+  ID
+> implements ServiceGeneralOperations<Entity, EntityToAudit, ID>{
   @Inject(UtilityService)
   protected readonly utilityService: UtilityService
 
@@ -24,7 +26,7 @@ export abstract class GeneralService<
 
   public async create(
     createEntityDto: Partial<Entity>,
-    actionDoneBy?: number,
+    actionDoneBy?: ID,
   ): Promise<Entity> {
     const entity = this.entityRepository.create(createEntityDto as Entity);
 
@@ -72,7 +74,7 @@ export abstract class GeneralService<
 
   public async update(
     updateEntityDto: Partial<Entity>,
-    actionDoneBy?: number,
+    actionDoneBy?: ID,
     actionDescription?: string,
   ): Promise<Entity> {
     const entity = await this.entityRepository.preload(
@@ -119,7 +121,7 @@ export abstract class GeneralService<
 
   public async softDelete(
     argument: object,
-    actionDoneBy?: number,
+    actionDoneBy?: ID,
     actionDescription?: string,
   ): Promise<void> {
     const entity: Entity = await this.entityRepository.findOne(argument);
@@ -138,6 +140,10 @@ export abstract class GeneralService<
     });
 
     try {
+      entity.status = 'DELETED';
+      entity.deleted_at =
+        this.utilityService.returnStringDateWithBrazilianTimeZone();
+      const newValue = await this.entityRepository.save(entity);
       await this.logChange(
         ActionAuditEnum.SOFTDELETE,
         actionDoneBy,
@@ -147,7 +153,7 @@ export abstract class GeneralService<
             ...lastChange[0].newValue,
           }
           : null,
-        entity as object,
+        newValue as object,
         actionDescription,
       );
     } catch (error) {
@@ -157,15 +163,11 @@ export abstract class GeneralService<
       );
     }
 
-    entity.status = 'DELETED';
-    entity.deleted_at =
-      this.utilityService.returnStringDateWithBrazilianTimeZone();
-    await this.entityRepository.save(entity);
   }
 
   public async delete(
     argument: object,
-    actionDoneBy?: number,
+    actionDoneBy?: ID,
     actionDescription?: string,
   ): Promise<void> {
     const entity: Entity = await this.entityRepository.findOne(argument);
@@ -205,9 +207,44 @@ export abstract class GeneralService<
     }
   }
 
+  public async restore(
+    argument: object,
+    actionDoneBy?: ID,
+    actionDescription?: string,
+  ): Promise<void> {
+    const entity: Entity = await this.entityRepository.findOne({
+      withDeleted: true,
+      ...argument,
+    });
+
+    if (!entity) throw new HttpException(
+      `Registro não encontrado`,
+      HttpStatus.NOT_FOUND
+    );
+
+    try {
+      entity.status = 'ACTIVE';
+      entity.deleted_at = null;
+      const newValue = await this.entityRepository.save(entity);
+      await this.logChange(
+        ActionAuditEnum.RESTORE,
+        actionDoneBy,
+        entity.id,
+        entity as object,
+        newValue as object,
+        actionDescription,
+      );
+    } catch (error) {
+      throw new HttpException(
+        'Ação não realizada erro ao cadastrar log',
+        HttpStatus.INTERNAL_SERVER_ERROR,
+      );
+    }
+  }
+
   public async logChange(
     action: string,
-    actionDoneBy: number,
+    actionDoneBy: ID,
     entityId: number,
     oldValue: object,
     newValue: object,
@@ -215,7 +252,7 @@ export abstract class GeneralService<
   ): Promise<void> {
     const entityAudit = new AuditEntity();
     entityAudit.action = action;
-    entityAudit.actionDoneBy = actionDoneBy;
+    entityAudit.actionDoneBy = actionDoneBy as number;
     entityAudit.entityId = entityId;
     entityAudit.oldValue = !!oldValue ? oldValue : null;
     entityAudit.newValue = !!newValue ? newValue : null;

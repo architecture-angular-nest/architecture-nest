@@ -7,7 +7,7 @@ import {
 
 export class GeneralEntity {
   @PrimaryGeneratedColumn()
-  id: number;
+  id: EntityId;
 
   @DeleteDateColumn({ nullable: true })
   deleted_at: Date;

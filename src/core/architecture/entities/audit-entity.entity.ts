@@ -2,7 +2,7 @@ import { Column, PrimaryGeneratedColumn } from 'typeorm';
 
 export class AuditEntity {
   @PrimaryGeneratedColumn()
-  id: number;
+  id: EntityId;
 
   @Column()
   timestamp: Date;
@@ -11,10 +11,10 @@ export class AuditEntity {
   action: string;
 
   @Column({ nullable: true })
-  actionDoneBy: number;
+  actionDoneBy: EntityId;
 
   @Column({ nullable: true })
-  entityId: number;
+  entityId: EntityId;
 
   @Column({ nullable: true })
   actionDescription: string;
