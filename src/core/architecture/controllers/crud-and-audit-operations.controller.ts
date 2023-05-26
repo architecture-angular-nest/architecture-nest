@@ -12,7 +12,7 @@ import { GeneralEntity } from "../entities/general-entity.entity";
 import { Response } from 'express';
 import { CrudCrontoler } from './crud.controler';
 import { ControllerAuditOperations } from '../interfaces/controller-audit-operations';
-import { CrudAndOtherOperationsService } from '../services/crud-and-ohter-operations.service';
+import { CrudAndAuditOperationsService } from '../services/crud-and-audit-operations.service';
 
 export abstract class CrudAndAuditOperationsCrontoler<
     Entity extends GeneralEntity,
@@ -22,7 +22,7 @@ export abstract class CrudAndAuditOperationsCrontoler<
     implements ControllerAuditOperations<Entity, EntityToAudit, ID>{
 
     constructor(
-        protected readonly service: CrudAndOtherOperationsService<Entity, EntityToAudit, ID>
+        protected readonly service: CrudAndAuditOperationsService<Entity, EntityToAudit, ID>
     ) {
         super(service)
     }

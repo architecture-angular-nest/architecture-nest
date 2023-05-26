@@ -12,15 +12,15 @@ import {
 
 import { AuditEntity } from "../entities/audit-entity.entity";
 import { GeneralEntity } from "../entities/general-entity.entity";
-import { CrudControllerOperations } from "../interfaces/crud-controller-operations";
 import { CrudService } from "../services/crud.service";
 import { Response } from 'express';
+import { ControllerCrudOperations } from '../interfaces/controller-crud-operations';
 
 export abstract class CrudCrontoler<
     Entity extends GeneralEntity,
     EntityToAudit extends AuditEntity,
     ID>
-    implements CrudControllerOperations<Entity, ID> {
+    implements ControllerCrudOperations<Entity, ID> {
 
     constructor(
         protected readonly service: CrudService<Entity, EntityToAudit, ID>

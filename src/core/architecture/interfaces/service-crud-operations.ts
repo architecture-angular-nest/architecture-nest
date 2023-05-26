@@ -1,6 +1,4 @@
-import { PaginatedList } from "./paginated-list";
-
-export interface CrudServiceOperations<Entity, ID> {
+export interface ServiceCrudOperations<Entity, ID> {
     createEntity(
         createEntityDto: Partial<Entity>,
         actionDoneBy?: ID,

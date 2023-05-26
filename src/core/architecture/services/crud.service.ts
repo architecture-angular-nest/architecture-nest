@@ -4,7 +4,7 @@ import { Repository } from "typeorm";
 import { AuditEntity } from "../entities/audit-entity.entity";
 import { GeneralEntity } from "../entities/general-entity.entity";
 import { GeneralService } from "./general.service";
-import { CrudServiceOperations } from "../interfaces/crud-service-operations";
+import { ServiceCrudOperations } from "../interfaces/service-crud-operations";
 import { PaginatedList } from "../interfaces/paginated-list";
 
 export abstract class CrudService<
@@ -12,7 +12,7 @@ export abstract class CrudService<
     EntityToAudit extends AuditEntity,
     ID>
     extends GeneralService<Entity, EntityToAudit, ID>
-    implements CrudServiceOperations<Entity, ID> {
+    implements ServiceCrudOperations<Entity, ID> {
 
     constructor(
         @InjectRepository(GeneralEntity)

@@ -1,6 +1,6 @@
 import { Response } from "express"
 
-export interface CrudControllerOperations<Entity, ID> {
+export interface ControllerCrudOperations<Entity, ID> {
     create(
         createDto: Partial<Entity>,
         res?: Response
