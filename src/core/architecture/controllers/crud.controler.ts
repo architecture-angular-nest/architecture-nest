@@ -3,10 +3,10 @@ import {
     Get,
     Post,
     Body,
-    Patch,
     Param,
     Query,
     Delete,
+    Put,
     Res
 } from '@nestjs/common';
 
@@ -106,7 +106,7 @@ export abstract class CrudCrontoler<
         }
     }
 
-    @Patch(':id')
+    @Put(':id')
     public async update(
         @Param('id') id: ID,
         @Body() updateDto: Partial<Entity>,
