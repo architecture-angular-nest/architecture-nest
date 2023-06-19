@@ -1,5 +1,3 @@
-import { UserToken } from './models/user-token';
-import { AuthService } from './auth.service';
 import {
   Controller,
   HttpCode,
@@ -10,9 +8,11 @@ import {
   Res,
 } from '@nestjs/common';
 
-import { LocalAuthGuard } from './guards/local-auth.guard';
-import { AuthRequest } from './models/auth-request';
 import { Response } from 'express';
+import { AuthService } from './auth.service';
+import { UserToken } from './models/user-token';
+import { AuthRequest } from './models/auth-request';
+import { LocalAuthGuard } from './guards/local-auth.guard';
 import { IsPublic } from './decorators/is-public.decorator';
 
 @Controller('auth')
@@ -28,9 +28,13 @@ export class AuthController {
 
       return res.status(200).send(loginResponse);
     } catch (error) {
-      console.log(error);
-
-      return res.status(error.status || 500).send(error);
+      return res
+        .status(error?.status || 500)
+        .send(
+          error?.status == 500 || !error?.status
+            ? { message: 'Internal Server Error' }
+            : error,
+        );
     }
   }
 }
