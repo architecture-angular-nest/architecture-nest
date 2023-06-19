@@ -3,5 +3,5 @@ export enum ActionAuditEnum {
   UPDATE = 'UPDATE',
   SOFTDELETE = 'SOFTDELETE',
   DELETE = 'DELETE',
-  RESTORE = 'RESTORE'
+  RESTORE = 'RESTORE',
 }
