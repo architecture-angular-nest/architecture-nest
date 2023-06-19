@@ -1,28 +1,28 @@
 import { HttpException, HttpStatus, Inject } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 
-import { Repository } from 'typeorm';
+import { FindManyOptions, FindOneOptions, Repository } from 'typeorm';
 import { GeneralEntity } from '../entities/general-entity.entity';
 import { UtilityService } from './../../../shared/services/utility.service';
 import { AuditEntity } from '../entities/audit-entity.entity';
 import { ActionAuditEnum } from '../enums/action-audit.enum';
 import { ServiceGeneralOperations } from '../interfaces/general-service-operations';
 
-
 export abstract class GeneralService<
   Entity extends GeneralEntity,
   EntityToAudit extends AuditEntity,
-  ID
-> implements ServiceGeneralOperations<Entity, EntityToAudit, ID>{
+  ID,
+> implements ServiceGeneralOperations<Entity, EntityToAudit, ID>
+{
   @Inject(UtilityService)
-  protected readonly utilityService: UtilityService
+  protected readonly utilityService: UtilityService;
 
   constructor(
     @InjectRepository(GeneralEntity)
     protected entityRepository: Repository<Entity>,
     @InjectRepository(AuditEntity)
     protected auditRepository: Repository<EntityToAudit>,
-  ) { }
+  ) {}
 
   public async create(
     createEntityDto: Partial<Entity>,
@@ -60,14 +60,14 @@ export abstract class GeneralService<
     }
   }
 
-  public async findOne(argument?: object): Promise<Entity> {
-    const entity = await this.entityRepository.findOne(argument);
+  public async findOne(options?: FindOneOptions<Entity>): Promise<Entity> {
+    const entity = await this.entityRepository.findOne(options);
 
     return entity;
   }
 
-  public async find(argument?: object): Promise<Entity[]> {
-    const entity = await this.entityRepository.find(argument);
+  public async find(options?: FindManyOptions<Entity>): Promise<Entity[]> {
+    const entity = await this.entityRepository.find(options);
 
     return entity;
   }
@@ -101,8 +101,8 @@ export abstract class GeneralService<
         entity.id,
         lastChange.length > 0
           ? {
-            ...lastChange[0].newValue,
-          }
+              ...lastChange[0].newValue,
+            }
           : null,
         entity as object,
         actionDescription,
@@ -120,11 +120,11 @@ export abstract class GeneralService<
   }
 
   public async softDelete(
-    argument: object,
+    options: FindOneOptions<Entity>,
     actionDoneBy?: ID,
     actionDescription?: string,
   ): Promise<void> {
-    const entity: Entity = await this.entityRepository.findOne(argument);
+    const entity: Entity = await this.entityRepository.findOne(options);
 
     if (!entity)
       throw new HttpException(`Registro não encontrado`, HttpStatus.NOT_FOUND);
@@ -150,8 +150,8 @@ export abstract class GeneralService<
         entity.id,
         lastChange.length > 0
           ? {
-            ...lastChange[0].newValue,
-          }
+              ...lastChange[0].newValue,
+            }
           : null,
         newValue as object,
         actionDescription,
@@ -162,15 +162,14 @@ export abstract class GeneralService<
         HttpStatus.INTERNAL_SERVER_ERROR,
       );
     }
-
   }
 
   public async delete(
-    argument: object,
+    options: FindOneOptions<Entity>,
     actionDoneBy?: ID,
     actionDescription?: string,
   ): Promise<void> {
-    const entity: Entity = await this.entityRepository.findOne(argument);
+    const entity: Entity = await this.entityRepository.findOne(options);
 
     if (!entity)
       throw new HttpException(`Registro não encontrado`, HttpStatus.NOT_FOUND);
@@ -192,8 +191,8 @@ export abstract class GeneralService<
         entity.id,
         lastChange.length > 0
           ? {
-            ...lastChange[0].newValue,
-          }
+              ...lastChange[0].newValue,
+            }
           : null,
         entity as object,
         actionDescription,
@@ -208,19 +207,17 @@ export abstract class GeneralService<
   }
 
   public async restore(
-    argument: object,
+    options: FindOneOptions<Entity>,
     actionDoneBy?: ID,
     actionDescription?: string,
   ): Promise<Entity> {
     const entity: Entity = await this.entityRepository.findOne({
       withDeleted: true,
-      ...argument,
+      ...options,
     });
 
-    if (!entity) throw new HttpException(
-      `Registro não encontrado`,
-      HttpStatus.NOT_FOUND
-    );
+    if (!entity)
+      throw new HttpException(`Registro não encontrado`, HttpStatus.NOT_FOUND);
 
     try {
       entity.status = 'ACTIVE';
@@ -264,8 +261,10 @@ export abstract class GeneralService<
     await this.auditRepository.save(entityAudit as EntityToAudit);
   }
 
-  public async findAuditEntities(argument: object): Promise<EntityToAudit[]> {
-    const entities: EntityToAudit[] = await this.auditRepository.find(argument);
+  public async findAuditEntities(
+    options?: FindManyOptions<EntityToAudit>,
+  ): Promise<EntityToAudit[]> {
+    const entities: EntityToAudit[] = await this.auditRepository.find(options);
 
     return entities;
   }

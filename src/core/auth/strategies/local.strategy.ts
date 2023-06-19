@@ -11,6 +11,6 @@ export class LocalStrategy extends PassportStrategy(Strategy) {
   }
 
   public async validate(email: string, password: string) {
-    return await this.authService.validateCompany(email, password);
+    return await this.authService.validateUser(email, password);
   }
 }

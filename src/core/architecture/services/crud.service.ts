@@ -1,6 +1,6 @@
 import { InjectRepository } from '@nestjs/typeorm';
 
-import { Repository } from 'typeorm';
+import { FindManyOptions, FindOneOptions, Repository } from 'typeorm';
 import { AuditEntity } from '../entities/audit-entity.entity';
 import { GeneralEntity } from '../entities/general-entity.entity';
 import { GeneralService } from './general.service';
@@ -31,8 +31,8 @@ export abstract class CrudService<
     return this.create(createEntityDto, actionDoneBy);
   }
 
-  public findAllEntity(argument?: object): Promise<Entity[]> {
-    return this.find(argument);
+  public findAllEntity(options?: FindManyOptions<Entity>): Promise<Entity[]> {
+    return this.find(options);
   }
 
   public async findWithPaginator(
@@ -47,14 +47,19 @@ export abstract class CrudService<
     return { data, total };
   }
 
-  public findOneEntity(id?: ID, argument?: object): Promise<Entity> {
-    return this.findOne(
+  public findOneEntity(
+    id?: ID,
+    options?: FindOneOptions<Entity>,
+  ): Promise<Entity> {
+    const optionsQuery = (
       !!id
         ? {
             where: { id },
           }
-        : argument,
-    );
+        : options
+    ) as FindOneOptions<Entity>;
+
+    return this.findOne(optionsQuery);
   }
 
   public updateEntity(
