@@ -1,43 +1,67 @@
-export interface ServiceGeneralOperations<Entity, EntityToAudit, ID> {
-    create(
-        createEntityDto: Partial<Entity>,
-        actionDoneBy?: ID,
-    ): Promise<Entity>;
+import { FindManyOptions, FindOneOptions } from 'typeorm';
+import { PaginatedList } from './paginated-list';
 
-    findOne(argument?: object): Promise<Entity>;
+export interface ServiceGeneralOperations<
+  Entity,
+  EntityToAudit,
+  ID,
+  CreateEntityDto,
+> {
+  create(createEntityDto: CreateEntityDto, actionDoneBy?: ID): Promise<Entity>;
 
-    update(
-        updateEntityDto: Partial<Entity>,
-        actionDoneBy?: ID,
-        actionDescription?: string,
-    ): Promise<Entity>;
+  findOne(options?: FindOneOptions<Entity>): Promise<Entity>;
 
-    softDelete(
-        argument: object,
-        actionDoneBy?: ID,
-        actionDescription?: string,
-    ): Promise<void>;
+  update(
+    updateEntityDto: Partial<CreateEntityDto>,
+    actionDoneBy?: ID,
+    actionDescription?: string,
+  ): Promise<Entity>;
 
-    delete(
-        argument: object,
-        actionDoneBy?: ID,
-        actionDescription?: string,
-    ): Promise<void>;
+  softDelete(
+    options: FindOneOptions<Entity>,
+    actionDoneBy?: ID,
+    actionDescription?: string,
+  ): Promise<void>;
 
-    restore(
-        argument: object,
-        actionDoneBy?: ID,
-        actionDescription?: string,
-    ): Promise<Entity>;
+  delete(
+    options: FindOneOptions<Entity>,
+    actionDoneBy?: ID,
+    actionDescription?: string,
+  ): Promise<void>;
 
-    logChange(
-        action: string,
-        actionDoneBy: ID,
-        entityId: number,
-        oldValue: object,
-        newValue: object,
-        actionDescription?: string,
-    ): Promise<void>;
+  restore(
+    options: FindOneOptions<Entity>,
+    actionDoneBy?: ID,
+    actionDescription?: string,
+  ): Promise<Entity>;
 
-    findAuditEntities(argument: object): Promise<EntityToAudit[]>;
+  logChange(
+    action: string,
+    actionDoneBy: ID,
+    entityId: number,
+    oldValue: object,
+    newValue: object,
+    actionDescription?: string,
+  ): Promise<void>;
+
+  findAuditEntities(
+    options?: FindManyOptions<EntityToAudit>,
+  ): Promise<EntityToAudit[]>;
+
+  findOneEntityLogsWithPaginator(
+    entityId: ID,
+    page: number,
+    limit: number,
+  ): Promise<PaginatedList<EntityToAudit>>;
+
+  findOneEntityLogs(entityId: ID): Promise<EntityToAudit[]>;
+
+  findEntityLogsWithPaginator(
+    page: number,
+    limit: number,
+  ): Promise<PaginatedList<EntityToAudit>>;
+
+  findEntityLogs(argument?: object): Promise<EntityToAudit[]>;
+
+  undoLastChange(entityId: ID, actionDoneBy?: ID): Promise<void | Entity>;
 }

@@ -11,6 +11,7 @@ async function bootstrap() {
     preflightContinue: false,
     optionsSuccessStatus: 204,
   });
+
   app.useGlobalPipes(
     new ValidationPipe({
       whitelist: true,

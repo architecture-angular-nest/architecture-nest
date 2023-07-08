@@ -4,14 +4,16 @@ import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import * as bcrypt from 'bcrypt';
 import { Repository } from 'typeorm';
 import { User } from './entities/user.entity';
+import { CreateUserDto } from './dto/create-user.dto';
 import { UserAudit } from './entities/user-audit.entity';
-import { CrudAndAuditOperationsService } from '../core/architecture/services/crud-and-audit-operations.service';
+import { GeneralService } from '../core/architecture/services/general.service';
 
 @Injectable()
-export class UserService extends CrudAndAuditOperationsService<
+export class UserService extends GeneralService<
   User,
   UserAudit,
-  EntityId
+  EntityId,
+  CreateUserDto
 > {
   constructor(
     @InjectRepository(User)
@@ -22,15 +24,15 @@ export class UserService extends CrudAndAuditOperationsService<
     super(userRepository, userAuditRepository);
   }
 
-  override async createEntity(
-    createEntityDto: Partial<User>,
-    actionDoneBy?: EntityId,
+  public async createEntity(
+    createEntityDto: CreateUserDto,
+    actionDoneBy?: Express.User,
   ): Promise<User> {
-    const emailCompanyAlreadyExists = await this.findOne({
+    const emailUserAlreadyExists = await this.findOne({
       where: { email: createEntityDto.email.toLowerCase() },
     });
 
-    if (emailCompanyAlreadyExists) {
+    if (emailUserAlreadyExists) {
       throw new HttpException(
         'E-mail already registered',
         HttpStatus.BAD_REQUEST,
@@ -43,7 +45,7 @@ export class UserService extends CrudAndAuditOperationsService<
         email: createEntityDto.email.toLowerCase(),
         password: await bcrypt.hash(createEntityDto.password, 10),
       },
-      actionDoneBy,
+      actionDoneBy['id'],
     );
     const resturnedUser: User =
       this.utilityService.changeObjectNullValuesToUndefined(
