@@ -13,6 +13,7 @@ import {
 import { Response } from 'express';
 import { CreateExemploDto } from './dto/create-exemplo.dto';
 import { ExemploService } from './exemplo.service';
+import { CurrentUser } from 'src/core/auth/decorators/current-user.decorator';
 
 @Controller('exemplo')
 export class ExemploController {
@@ -22,9 +23,13 @@ export class ExemploController {
   public async create(
     @Body() createDto: CreateExemploDto,
     @Res() res?: Response,
+    @CurrentUser() user?: Express.User,
   ): Promise<Response<any, Record<string, any>>> {
     try {
-      const savedEntity = await this.exemploService.createEntity(createDto);
+      const savedEntity = await this.exemploService.createEntity(
+        createDto,
+        user,
+      );
 
       return res.status(201).send(savedEntity);
     } catch (error) {

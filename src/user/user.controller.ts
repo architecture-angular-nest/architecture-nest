@@ -3,6 +3,7 @@ import { Body, Controller, Post, Res } from '@nestjs/common';
 import { UserService } from './user.service';
 import { CreateUserDto } from './dto/create-user.dto';
 import { Response } from 'express';
+import { CurrentUser } from 'src/core/auth/decorators/current-user.decorator';
 
 @Controller('user')
 export class UserController {
@@ -12,9 +13,10 @@ export class UserController {
   public async create(
     @Body() createDto: CreateUserDto,
     @Res() res?: Response,
+    @CurrentUser() user?: Express.User,
   ): Promise<Response<any, Record<string, any>>> {
     try {
-      const savedEntity = await this.userService.createEntity(createDto);
+      const savedEntity = await this.userService.createEntity(createDto, user);
 
       return res.status(201).send(savedEntity);
     } catch (error) {
