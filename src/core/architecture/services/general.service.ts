@@ -1,8 +1,9 @@
-import { HttpException, HttpStatus, Inject } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
+import { HttpException, HttpStatus, Inject } from '@nestjs/common';
 
 import {
   DeepPartial,
+  EntityManager,
   FindManyOptions,
   FindOneOptions,
   FindOptionsOrder,
@@ -11,12 +12,12 @@ import {
   FindOptionsWhere,
   Repository,
 } from 'typeorm';
+import { ActionAuditEnum } from '../enums/action-audit.enum';
+import { PaginatedList } from '../interfaces/paginated-list';
+import { AuditEntity } from '../entities/audit-entity.entity';
 import { GeneralEntity } from '../entities/general-entity.entity';
 import { UtilityService } from './../../../shared/services/utility.service';
-import { AuditEntity } from '../entities/audit-entity.entity';
-import { ActionAuditEnum } from '../enums/action-audit.enum';
 import { ServiceGeneralOperations } from '../interfaces/general-service-operations';
-import { PaginatedList } from '../interfaces/paginated-list';
 
 export abstract class GeneralService<
   Entity extends GeneralEntity,
@@ -40,37 +41,23 @@ export abstract class GeneralService<
     createEntityDto: CreateEntityDto,
     actionDoneBy?: ID,
   ): Promise<Entity> {
-    const entity = this.entityRepository.create(
-      createEntityDto as DeepPartial<Entity>,
+    return await this.entityRepository.manager.transaction(
+      async (entityManager: EntityManager): Promise<Entity> => {
+        const entity = this.entityRepository.create(
+          createEntityDto as DeepPartial<Entity>,
+        );
+        const savedEntity = await entityManager.save(entity);
+        await this.logChange(
+          ActionAuditEnum.CREATE,
+          actionDoneBy,
+          savedEntity.id,
+          null,
+          savedEntity as object,
+        );
+
+        return savedEntity;
+      },
     );
-    const savedEntity = await this.entityRepository.save(entity);
-
-    try {
-      await this.logChange(
-        ActionAuditEnum.CREATE,
-        actionDoneBy,
-        savedEntity.id,
-        null,
-        savedEntity as object,
-      );
-
-      return savedEntity;
-    } catch (error) {
-      this.softDelete(
-        {
-          where: {
-            id: savedEntity.id,
-          },
-        } as FindOneOptions<Entity>,
-        actionDoneBy,
-        'Entity registration error',
-      );
-
-      throw new HttpException(
-        'Ação não realizada erro ao cadastrar log',
-        HttpStatus.INTERNAL_SERVER_ERROR,
-      );
-    }
   }
 
   public async findOne(options?: FindOneOptions<Entity>): Promise<Entity> {
@@ -90,46 +77,45 @@ export abstract class GeneralService<
     actionDoneBy?: ID,
     actionDescription?: string,
   ): Promise<Entity> {
-    const entity = await this.entityRepository.preload(
-      updateEntityDto as unknown as DeepPartial<Entity>,
+    return await this.entityRepository.manager.transaction(
+      async (entityManager: EntityManager): Promise<Entity> => {
+        const entity = await this.entityRepository.preload(
+          updateEntityDto as unknown as DeepPartial<Entity>,
+        );
+
+        if (!entity)
+          throw new HttpException(
+            `Registro não encontrado`,
+            HttpStatus.NOT_FOUND,
+          );
+
+        const lastChange: EntityToAudit[] = await this.findAuditEntities({
+          order: {
+            timestamp: 'DESC',
+          },
+          where: {
+            entityId: entity.id,
+          },
+          take: 5,
+        } as FindManyOptions<EntityToAudit>);
+
+        await this.logChange(
+          ActionAuditEnum.UPDATE,
+          actionDoneBy,
+          entity.id,
+          lastChange.length > 0
+            ? {
+                ...lastChange[0].newValue,
+              }
+            : null,
+          entity as object,
+          actionDescription,
+        );
+        const updatedEntity = entityManager.save(entity);
+
+        return updatedEntity;
+      },
     );
-
-    if (!entity)
-      throw new HttpException(`Registro não encontrado`, HttpStatus.NOT_FOUND);
-
-    try {
-      const lastChange: EntityToAudit[] = await this.findAuditEntities({
-        order: {
-          timestamp: 'DESC',
-        },
-        where: {
-          entityId: entity.id,
-        },
-        take: 5,
-      } as FindManyOptions<EntityToAudit>);
-
-      await this.logChange(
-        ActionAuditEnum.UPDATE,
-        actionDoneBy,
-        entity.id,
-        lastChange.length > 0
-          ? {
-              ...lastChange[0].newValue,
-            }
-          : null,
-        entity as object,
-        actionDescription,
-      );
-    } catch (error) {
-      throw new HttpException(
-        'Ação não realizada erro ao cadastrar log',
-        HttpStatus.INTERNAL_SERVER_ERROR,
-      );
-    }
-
-    const updatedEntity = this.entityRepository.save(entity);
-
-    return updatedEntity;
   }
 
   public async softDelete(
@@ -137,44 +123,44 @@ export abstract class GeneralService<
     actionDoneBy?: ID,
     actionDescription?: string,
   ): Promise<void> {
-    const entity: Entity = await this.entityRepository.findOne(options);
+    return await this.entityRepository.manager.transaction(
+      async (entityManager: EntityManager): Promise<void> => {
+        const entity: Entity = await this.entityRepository.findOne(options);
 
-    if (!entity)
-      throw new HttpException(`Registro não encontrado`, HttpStatus.NOT_FOUND);
+        if (!entity)
+          throw new HttpException(
+            `Registro não encontrado`,
+            HttpStatus.NOT_FOUND,
+          );
 
-    const lastChange: EntityToAudit[] = await this.findAuditEntities({
-      order: {
-        timestamp: 'DESC',
+        const lastChange: EntityToAudit[] = await this.findAuditEntities({
+          order: {
+            timestamp: 'DESC',
+          },
+          where: {
+            entityId: entity.id,
+          },
+          take: 5,
+        } as FindManyOptions<EntityToAudit>);
+
+        entity.status = 'DELETED';
+        entity.deleted_at =
+          this.utilityService.returnStringDateWithBrazilianTimeZone();
+        const newValue = await entityManager.save(entity);
+        await this.logChange(
+          ActionAuditEnum.SOFTDELETE,
+          actionDoneBy,
+          entity.id,
+          lastChange.length > 0
+            ? {
+                ...lastChange[0].newValue,
+              }
+            : null,
+          newValue as object,
+          actionDescription,
+        );
       },
-      where: {
-        entityId: entity.id,
-      },
-      take: 5,
-    } as FindManyOptions<EntityToAudit>);
-
-    try {
-      entity.status = 'DELETED';
-      entity.deleted_at =
-        this.utilityService.returnStringDateWithBrazilianTimeZone();
-      const newValue = await this.entityRepository.save(entity);
-      await this.logChange(
-        ActionAuditEnum.SOFTDELETE,
-        actionDoneBy,
-        entity.id,
-        lastChange.length > 0
-          ? {
-              ...lastChange[0].newValue,
-            }
-          : null,
-        newValue as object,
-        actionDescription,
-      );
-    } catch (error) {
-      throw new HttpException(
-        'Ação não realizada erro ao cadastrar log',
-        HttpStatus.INTERNAL_SERVER_ERROR,
-      );
-    }
+    );
   }
 
   public async delete(
@@ -182,41 +168,41 @@ export abstract class GeneralService<
     actionDoneBy?: ID,
     actionDescription?: string,
   ): Promise<void> {
-    const entity: Entity = await this.entityRepository.findOne(options);
+    return await this.entityRepository.manager.transaction(
+      async (entityManager: EntityManager): Promise<void> => {
+        const entity: Entity = await this.entityRepository.findOne(options);
 
-    if (!entity)
-      throw new HttpException(`Registro não encontrado`, HttpStatus.NOT_FOUND);
+        if (!entity)
+          throw new HttpException(
+            `Registro não encontrado`,
+            HttpStatus.NOT_FOUND,
+          );
 
-    const lastChange: EntityToAudit[] = await this.findAuditEntities({
-      order: {
-        timestamp: 'DESC',
+        await entityManager.remove(entity);
+        const lastChange: EntityToAudit[] = await this.findAuditEntities({
+          order: {
+            timestamp: 'DESC',
+          },
+          where: {
+            entityId: entity.id,
+          },
+          take: 5,
+        } as FindManyOptions<EntityToAudit>);
+
+        await this.logChange(
+          ActionAuditEnum.DELETE,
+          actionDoneBy,
+          entity.id,
+          lastChange.length > 0
+            ? {
+                ...lastChange[0].newValue,
+              }
+            : null,
+          entity as object,
+          actionDescription,
+        );
       },
-      where: {
-        entityId: entity.id,
-      },
-      take: 5,
-    } as FindManyOptions<EntityToAudit>);
-
-    try {
-      await this.logChange(
-        ActionAuditEnum.DELETE,
-        actionDoneBy,
-        entity.id,
-        lastChange.length > 0
-          ? {
-              ...lastChange[0].newValue,
-            }
-          : null,
-        entity as object,
-        actionDescription,
-      );
-      await this.entityRepository.remove(entity);
-    } catch (error) {
-      throw new HttpException(
-        'Ação não realizada erro ao cadastrar log',
-        HttpStatus.INTERNAL_SERVER_ERROR,
-      );
-    }
+    );
   }
 
   public async restore(
@@ -224,34 +210,34 @@ export abstract class GeneralService<
     actionDoneBy?: ID,
     actionDescription?: string,
   ): Promise<Entity> {
-    const entity: Entity = await this.entityRepository.findOne({
-      withDeleted: true,
-      ...options,
-    });
+    return await this.entityRepository.manager.transaction(
+      async (entityManager: EntityManager): Promise<Entity> => {
+        const entity: Entity = await this.entityRepository.findOne({
+          withDeleted: true,
+          ...options,
+        });
 
-    if (!entity)
-      throw new HttpException(`Registro não encontrado`, HttpStatus.NOT_FOUND);
+        if (!entity)
+          throw new HttpException(
+            `Registro não encontrado`,
+            HttpStatus.NOT_FOUND,
+          );
 
-    try {
-      entity.status = 'ACTIVE';
-      entity.deleted_at = null;
-      const newValue = await this.entityRepository.save(entity);
-      await this.logChange(
-        ActionAuditEnum.RESTORE,
-        actionDoneBy,
-        entity.id,
-        entity as object,
-        newValue as object,
-        actionDescription,
-      );
+        entity.status = 'ACTIVE';
+        entity.deleted_at = null;
+        const newValue = await entityManager.save(entity);
+        await this.logChange(
+          ActionAuditEnum.RESTORE,
+          actionDoneBy,
+          entity.id,
+          entity as object,
+          newValue as object,
+          actionDescription,
+        );
 
-      return newValue;
-    } catch (error) {
-      throw new HttpException(
-        'Ação não realizada erro ao cadastrar log',
-        HttpStatus.INTERNAL_SERVER_ERROR,
-      );
-    }
+        return newValue;
+      },
+    );
   }
 
   public async logChange(
@@ -262,16 +248,21 @@ export abstract class GeneralService<
     newValue: object,
     actionDescription?: string,
   ): Promise<void> {
-    const entityAudit = new AuditEntity();
-    entityAudit.action = action;
-    entityAudit.actionDoneBy = actionDoneBy as number;
-    entityAudit.entityId = entityId;
-    entityAudit.oldValue = !!oldValue ? oldValue : null;
-    entityAudit.newValue = !!newValue ? newValue : null;
-    entityAudit.actionDescription = actionDescription;
-    entityAudit.timestamp =
-      this.utilityService.returnStringDateWithBrazilianTimeZone();
-    await this.auditRepository.save(entityAudit as EntityToAudit);
+    await this.auditRepository.manager.transaction(
+      async (entiyManager: EntityManager) => {
+        const entityAudit = this.auditRepository.create({
+          action: action,
+          actionDoneBy: actionDoneBy as number,
+          entityId: entityId,
+          oldValue: !!oldValue ? oldValue : null,
+          newValue: !!newValue ? newValue : null,
+          actionDescription: actionDescription,
+          timestamp:
+            this.utilityService.returnStringDateWithBrazilianTimeZone(),
+        } as DeepPartial<EntityToAudit>);
+        await entiyManager.save(entityAudit as EntityToAudit);
+      },
+    );
   }
 
   public async findAuditEntities(
@@ -382,7 +373,7 @@ export abstract class GeneralService<
 
     if (entityThatWasDeleted)
       throw new HttpException(
-        `Entidade deletada difinivamente, não há recuperação.`,
+        `Entity permanently deleted, there is no recovery.`,
         HttpStatus.NOT_FOUND,
       );
 

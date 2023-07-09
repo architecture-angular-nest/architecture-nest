@@ -86,36 +86,18 @@ export class ExemploController {
     }
   }
 
-  @Get(':id')
-  public async findOne(
-    @Param('id') id: number,
-    @Res() res?: Response,
-  ): Promise<Response<any, Record<string, any>>> {
-    try {
-      const entity = await this.exemploService.findOneEntity(id);
-
-      return res.status(200).send(entity);
-    } catch (error) {
-      return res
-        .status(error.status || 500)
-        .send(
-          error.status == 500 || !error.status
-            ? { message: 'Internal Server Error' }
-            : error,
-        );
-    }
-  }
-
   @Put(':id')
   public async update(
     @Param('id') id: number,
     @Body() updateDto: Partial<CreateExemploDto>,
     @Res() res?: Response,
+    @CurrentUser() user?: Express.User,
   ): Promise<Response<any, Record<string, any>>> {
     try {
       const updatedEntity = await this.exemploService.updateEntity(
         id,
         updateDto,
+        user,
       );
 
       return res.status(200).send(updatedEntity);
@@ -234,7 +216,7 @@ export class ExemploController {
         .status(error.status || 500)
         .send(
           error.status == 500 || !error.status
-            ? { message: 'Internal Server Error' }
+            ? !error.message || { message: 'Internal Server Error' }
             : error,
         );
     }
@@ -246,6 +228,26 @@ export class ExemploController {
       const undoChangeResult = await this.exemploService.undoLastChange(id);
 
       return res.status(200).send(undoChangeResult);
+    } catch (error) {
+      return res
+        .status(error.status || 500)
+        .send(
+          error.status == 500 || !error.status
+            ? { message: 'Internal Server Error' }
+            : error,
+        );
+    }
+  }
+
+  @Get(':id')
+  public async findOne(
+    @Param('id') id: number,
+    @Res() res?: Response,
+  ): Promise<Response<any, Record<string, any>>> {
+    try {
+      const entity = await this.exemploService.findOneEntity(id);
+
+      return res.status(200).send(entity);
     } catch (error) {
       return res
         .status(error.status || 500)

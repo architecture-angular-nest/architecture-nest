@@ -1,8 +1,9 @@
+import { ActionAuditEnum } from './../core/architecture/enums/action-audit.enum';
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 
-import { FindOneOptions, Repository } from 'typeorm';
 import { Exemplo } from './entities/exemplo.entity';
+import { FindOneOptions, Repository } from 'typeorm';
 import { CreateExemploDto } from './dto/create-exemplo.dto';
 import { UpdateExemploDto } from './dto/update-exemplo.dto';
 import { ExemploAudit } from './entities/exemplo-audit.entity';
@@ -52,11 +53,7 @@ export class ExemploService extends GeneralService<
     options?: FindOneOptions<Exemplo>,
   ): Promise<Exemplo> {
     const optionsQuery = (
-      !!id
-        ? {
-            where: { id },
-          }
-        : options
+      !!id ? { where: { id } } : options
     ) as FindOneOptions<Exemplo>;
 
     return this.findOne(optionsQuery);
@@ -66,12 +63,11 @@ export class ExemploService extends GeneralService<
     id: number,
     updateEntityDto: UpdateExemploDto,
     actionDoneBy?: Express.User,
-    actionDescription?: string,
   ): Promise<Exemplo> {
     return this.update(
       { id: +id, ...updateEntityDto } as Partial<CreateExemploDto>,
       actionDoneBy['id'],
-      actionDescription,
+      ActionAuditEnum.UPDATE,
     );
   }
 
