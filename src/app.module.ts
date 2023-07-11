@@ -8,6 +8,7 @@ import { UserModule } from './user/user.module';
 import { AppController } from './app.controller';
 import { AuthModule } from './core/auth/auth.module';
 import { ExemploModule } from './exemplo/exemplo.module';
+import { dataSourceOptions } from './../database/data-source';
 import { JwtAuthGuard } from './core/auth/guards/jwt-auth.guard';
 
 @Module({
@@ -17,9 +18,7 @@ import { JwtAuthGuard } from './core/auth/guards/jwt-auth.guard';
       isGlobal: true,
     }),
     TypeOrmModule.forRoot({
-      type: 'sqlite',
-      database: 'db',
-      entities: ['dist/**/*.entity.js'],
+      ...dataSourceOptions,
       autoLoadEntities: true,
       synchronize: true,
     }),
@@ -36,4 +35,4 @@ import { JwtAuthGuard } from './core/auth/guards/jwt-auth.guard';
     },
   ],
 })
-export class AppModule {}
+export class AppModule { }

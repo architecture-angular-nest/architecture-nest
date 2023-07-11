@@ -7,15 +7,16 @@ import { FindOneOptions, Repository } from 'typeorm';
 import { CreateExemploDto } from './dto/create-exemplo.dto';
 import { UpdateExemploDto } from './dto/update-exemplo.dto';
 import { ExemploAudit } from './entities/exemplo-audit.entity';
-import { GeneralService } from '..//core/architecture/services/general.service';
 import { PaginatedList } from './../core/architecture/interfaces/paginated-list';
+import { RepositoryWithAudit } from '../core/architecture/repositories/repository-with-audit';
 @Injectable()
-export class ExemploService extends GeneralService<
+export class ExemploService extends RepositoryWithAudit<
   Exemplo,
   ExemploAudit,
   EntityId,
   CreateExemploDto
 > {
+
   constructor(
     @InjectRepository(Exemplo)
     private readonly exemploRepository: Repository<Exemplo>,
