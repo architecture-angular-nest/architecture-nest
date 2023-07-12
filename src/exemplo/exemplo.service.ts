@@ -8,6 +8,7 @@ import { UpdateExemploDto } from './dto/update-exemplo.dto';
 import { ExemploAudit } from './entities/exemplo-audit.entity';
 import { ActionAuditEnum } from './../core/architecture/enums/action-audit.enum';
 import { TypeOrmWithAuditRepository } from '../core/architecture/repositories/typeorm-with-audit.repository';
+
 @Injectable()
 export class ExemploService extends TypeOrmWithAuditRepository<
   Exemplo,
@@ -15,7 +16,6 @@ export class ExemploService extends TypeOrmWithAuditRepository<
   EntityId,
   CreateExemploDto
 > {
-
   constructor(
     @InjectRepository(Exemplo)
     private readonly exemploRepository: Repository<Exemplo>,
@@ -59,10 +59,7 @@ export class ExemploService extends TypeOrmWithAuditRepository<
     );
   }
 
-  public removeEntity(
-    id: number,
-    actionDoneBy?: Express.User,
-  ): Promise<void> {
+  public removeEntity(id: number, actionDoneBy?: Express.User): Promise<void> {
     return this.softDelete(
       {
         where: { id },

@@ -1,4 +1,4 @@
 export interface PaginatedList<Entity> {
-    data: Entity[];
-    total: number;
+  data: Entity[];
+  total: number;
 }

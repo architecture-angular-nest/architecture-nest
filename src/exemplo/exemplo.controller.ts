@@ -17,7 +17,7 @@ import { CurrentUser } from 'src/core/auth/decorators/current-user.decorator';
 
 @Controller('exemplo')
 export class ExemploController {
-  constructor(private readonly exemploService: ExemploService) { }
+  constructor(private readonly exemploService: ExemploService) {}
 
   @Post()
   public async create(
@@ -121,10 +121,7 @@ export class ExemploController {
     @CurrentUser() user?: Express.User,
   ): Promise<Response<any, Record<string, any>>> {
     try {
-      await this.exemploService.removeEntity(
-        id,
-        user
-      );
+      await this.exemploService.removeEntity(id, user);
 
       return res.status(204).send();
     } catch (error) {
@@ -235,8 +232,10 @@ export class ExemploController {
     @CurrentUser() user?: Express.User,
   ) {
     try {
-      const undoChangeResult = await this.exemploService
-        .undoLastChange(id, user['id']);
+      const undoChangeResult = await this.exemploService.undoLastChange(
+        id,
+        user['id'],
+      );
 
       return res.status(200).send(undoChangeResult);
     } catch (error) {
