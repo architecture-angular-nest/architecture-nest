@@ -2,7 +2,6 @@ import { PaginatedList } from "./paginated-list";
 
 export interface RepositoryOperations<
     Entity,
-    EntityToAudit,
     ID,
     CreateEntityDto,
 > {
@@ -11,6 +10,11 @@ export interface RepositoryOperations<
     findOne<T>(options?: T): Promise<Entity>;
 
     find<T>(options?: T): Promise<Entity[]>;
+
+    findWithPaginator(
+        page: number,
+        limit: number,
+    ): Promise<PaginatedList<Entity>>;
 
     update(
         updateEntityDto: Partial<CreateEntityDto>,
@@ -29,7 +33,18 @@ export interface RepositoryOperations<
         actionDoneBy?: ID,
         actionDescription?: string,
     ): Promise<void>;
+}
 
+export interface RepositoryWithAuditOperations<
+    Entity,
+    EntityToAudit,
+    ID,
+    CreateEntityDto,
+> extends RepositoryOperations<
+    Entity,
+    ID,
+    CreateEntityDto
+> {
     restore<T>(
         options: T,
         actionDoneBy?: ID,

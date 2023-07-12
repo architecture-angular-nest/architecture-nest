@@ -12,20 +12,19 @@ import {
     FindOptionsWhere,
     Repository
 } from "typeorm";
-import { RepositoryOperations } from "../interfaces/reapository-operations";
-import dataSource from "database/data-source";
-import { GeneralEntity } from "../entities/general-entity.entity";
 import { AuditEntity } from "../entities/audit-entity.entity";
 import { ActionAuditEnum } from "../enums/action-audit.enum";
 import { PaginatedList } from '../interfaces/paginated-list';
-import { UtilityService } from './../../../shared/services/utility.service';
+import { GeneralEntity } from "../entities/general-entity.entity";
+import { UtilityService } from '../../../shared/services/utility.service';
+import { RepositoryWithAuditOperations } from "../interfaces/reapository-operations";
 
-export abstract class RepositoryWithAudit<
+export abstract class TypeOrmWithAuditRepository<
     Entity extends GeneralEntity,
     EntityToAudit extends AuditEntity,
     ID,
     CreateEntityDto,
-> implements RepositoryOperations<
+> implements RepositoryWithAuditOperations<
     Entity,
     EntityToAudit,
     ID,
@@ -75,6 +74,18 @@ export abstract class RepositoryWithAudit<
         const entity = await this.entityRepository.find(options);
 
         return entity;
+    }
+
+    public async findWithPaginator(
+        page: number,
+        limit: number,
+    ): Promise<PaginatedList<Entity>> {
+        const [data, total] = await this.entityRepository.findAndCount({
+            take: limit,
+            skip: (page - 1) * limit,
+        });
+
+        return { data, total };
     }
 
     public async update(

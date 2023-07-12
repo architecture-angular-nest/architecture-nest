@@ -18,5 +18,14 @@ export class GeneralEntity {
   created_at: Date;
 
   @Column({ nullable: true })
+  created_by: EntityId;
+
+  @Column({ nullable: true })
+  updated_by: EntityId;
+
+  @Column({ nullable: true })
+  deleted_by: EntityId;
+
+  @Column({ nullable: true })
   status: string;
 }

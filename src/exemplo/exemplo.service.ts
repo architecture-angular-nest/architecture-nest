@@ -1,4 +1,3 @@
-import { ActionAuditEnum } from './../core/architecture/enums/action-audit.enum';
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 
@@ -7,10 +6,10 @@ import { FindOneOptions, Repository } from 'typeorm';
 import { CreateExemploDto } from './dto/create-exemplo.dto';
 import { UpdateExemploDto } from './dto/update-exemplo.dto';
 import { ExemploAudit } from './entities/exemplo-audit.entity';
-import { PaginatedList } from './../core/architecture/interfaces/paginated-list';
-import { RepositoryWithAudit } from '../core/architecture/repositories/repository-with-audit';
+import { ActionAuditEnum } from './../core/architecture/enums/action-audit.enum';
+import { TypeOrmWithAuditRepository } from '../core/architecture/repositories/typeorm-with-audit.repository';
 @Injectable()
-export class ExemploService extends RepositoryWithAudit<
+export class ExemploService extends TypeOrmWithAuditRepository<
   Exemplo,
   ExemploAudit,
   EntityId,
@@ -35,18 +34,6 @@ export class ExemploService extends RepositoryWithAudit<
 
   public findAllEntity(): Promise<Exemplo[]> {
     return this.find();
-  }
-
-  public async findWithPaginator(
-    page: number,
-    limit: number,
-  ): Promise<PaginatedList<Exemplo>> {
-    const [data, total] = await this.entityRepository.findAndCount({
-      take: limit,
-      skip: (page - 1) * limit,
-    });
-
-    return { data, total };
   }
 
   public findOneEntity(
