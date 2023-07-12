@@ -118,9 +118,13 @@ export class ExemploController {
   public async remove(
     @Param('id') id: number,
     @Res() res?: Response,
+    @CurrentUser() user?: Express.User,
   ): Promise<Response<any, Record<string, any>>> {
     try {
-      await this.exemploService.removeEntity(id);
+      await this.exemploService.removeEntity(
+        id,
+        user
+      );
 
       return res.status(204).send();
     } catch (error) {
@@ -225,9 +229,14 @@ export class ExemploController {
   }
 
   @Post('undo-last-change/:id')
-  public async undoLastChange(@Param('id') id: number, @Res() res?: Response) {
+  public async undoLastChange(
+    @Param('id') id: number,
+    @Res() res?: Response,
+    @CurrentUser() user?: Express.User,
+  ) {
     try {
-      const undoChangeResult = await this.exemploService.undoLastChange(id);
+      const undoChangeResult = await this.exemploService
+        .undoLastChange(id, user['id']);
 
       return res.status(200).send(undoChangeResult);
     } catch (error) {

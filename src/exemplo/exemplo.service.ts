@@ -59,9 +59,15 @@ export class ExemploService extends TypeOrmWithAuditRepository<
     );
   }
 
-  public removeEntity(id: number): Promise<void> {
-    return this.softDelete({
-      where: { id },
-    });
+  public removeEntity(
+    id: number,
+    actionDoneBy?: Express.User,
+  ): Promise<void> {
+    return this.softDelete(
+      {
+        where: { id },
+      },
+      actionDoneBy['id'],
+    );
   }
 }

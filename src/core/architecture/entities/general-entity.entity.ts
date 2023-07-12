@@ -6,7 +6,6 @@ import {
   PrimaryGeneratedColumn,
 } from 'typeorm';
 
-@Entity()
 export class GeneralEntity {
   @PrimaryGeneratedColumn()
   id: EntityId;
