@@ -6,7 +6,8 @@ import { Repository } from 'typeorm';
 import { User } from './entities/user.entity';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UserAudit } from './entities/user-audit.entity';
-import { TypeOrmWithAuditRepository } from '../core/architecture/repositories/typeorm-with-audit.repository';
+import { EntityId } from './../core/architecture/types/enity-id';
+import { TypeOrmWithAuditRepository } from '../core/architecture/repositories/typeorm/typeorm-with-audit.repository';
 
 @Injectable()
 export class UserService extends TypeOrmWithAuditRepository<

@@ -1,5 +1,5 @@
 import { Column, Entity, PrimaryGeneratedColumn } from 'typeorm';
-import { GeneralEntity } from '../../core/architecture/entities/general-entity.entity';
+import { GeneralEntity } from './../../core/architecture/entities/typeorm/general-entity.entity';
 
 @Entity('exemplos')
 export class Exemplo extends GeneralEntity {

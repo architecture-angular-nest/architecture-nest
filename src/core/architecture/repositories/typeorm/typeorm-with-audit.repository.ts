@@ -12,12 +12,12 @@ import {
   FindOptionsWhere,
   Repository,
 } from 'typeorm';
-import { AuditEntity } from '../entities/audit-entity.entity';
-import { ActionAuditEnum } from '../enums/action-audit.enum';
-import { PaginatedList } from '../interfaces/paginated-list';
-import { GeneralEntity } from '../entities/general-entity.entity';
-import { UtilityService } from '../../../shared/services/utility.service';
-import { RepositoryWithAuditOperations } from '../interfaces/reapository-operations';
+import { AuditEntity } from '../../entities/typeorm/audit-entity.entity';
+import { ActionAuditEnum } from '../../enums/action-audit.enum';
+import { PaginatedList } from '../../interfaces/paginated-list';
+import { UtilityService } from '../../../../shared/services/utility.service';
+import { RepositoryWithAuditOperations } from '../../interfaces/reapository-with-audit-operations';
+import { GeneralEntity } from '../../entities/typeorm/general-entity.entity';
 
 export abstract class TypeOrmWithAuditRepository<
   Entity extends GeneralEntity,
@@ -31,9 +31,7 @@ export abstract class TypeOrmWithAuditRepository<
   protected readonly utilityService: UtilityService;
 
   constructor(
-    @InjectRepository(GeneralEntity)
     protected entityRepository: Repository<Entity>,
-    @InjectRepository(AuditEntity)
     protected auditRepository: Repository<EntityToAudit>,
   ) {}
 

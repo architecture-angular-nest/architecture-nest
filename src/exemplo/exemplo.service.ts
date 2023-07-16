@@ -6,8 +6,9 @@ import { FindOneOptions, Repository } from 'typeorm';
 import { CreateExemploDto } from './dto/create-exemplo.dto';
 import { UpdateExemploDto } from './dto/update-exemplo.dto';
 import { ExemploAudit } from './entities/exemplo-audit.entity';
+import { EntityId } from './../core/architecture/types/enity-id';
 import { ActionAuditEnum } from './../core/architecture/enums/action-audit.enum';
-import { TypeOrmWithAuditRepository } from '../core/architecture/repositories/typeorm-with-audit.repository';
+import { TypeOrmWithAuditRepository } from '../core/architecture/repositories/typeorm/typeorm-with-audit.repository';
 
 @Injectable()
 export class ExemploService extends TypeOrmWithAuditRepository<

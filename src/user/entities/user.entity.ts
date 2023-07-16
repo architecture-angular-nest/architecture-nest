@@ -1,5 +1,5 @@
 import { Column, Entity } from 'typeorm';
-import { GeneralEntity } from './../../core/architecture/entities/general-entity.entity';
+import { GeneralEntity } from './../../core/architecture/entities/typeorm/general-entity.entity';
 
 @Entity('users')
 export class User extends GeneralEntity {
