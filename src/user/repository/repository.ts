@@ -41,4 +41,15 @@ export class UserRepositoryWithAudit extends TypeOrmWithAuditRepository<
       where: { email: email.toLowerCase() },
     });
   }
+  public findOneWithEspacificFildsByEmail(
+    fields: object,
+    email: string,
+  ): Promise<User> {
+    return this.findOne({
+      select: {
+        ...fields,
+      },
+      where: { email: email.toLowerCase() },
+    });
+  }
 }

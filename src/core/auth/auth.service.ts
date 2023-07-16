@@ -16,15 +16,10 @@ export class AuthService {
   ) {}
 
   public async validateUser(email: string, password: string) {
-    const user: User = await this.userService.findOne({
-      select: {
-        id: true,
-        name: true,
-        email: true,
-        password: true,
-      },
-      where: { email },
-    });
+    const user: User = await this.userService.findOneWithEspacificFildsByEmail(
+      ['id', 'name', 'email', 'password'],
+      email,
+    );
 
     if (user) {
       const isPasswordValid = await bcrypt.compare(password, user.password);

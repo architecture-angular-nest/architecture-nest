@@ -68,4 +68,15 @@ export class UserService extends CrudWithAuditService<
       password: undefined,
     };
   }
+  findOneWithEspacificFildsByEmail(fields: string[], email: string) {
+    const formatedFilds: object = {};
+    Object.keys(fields).forEach((field: string, i: number) => {
+      formatedFilds[`${fields[i]}`] = true;
+    });
+
+    return this.repositoryWithAudit.findOneWithEspacificFildsByEmail(
+      formatedFilds,
+      email.toLowerCase(),
+    );
+  }
 }
