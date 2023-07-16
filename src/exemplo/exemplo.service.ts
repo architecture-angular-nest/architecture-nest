@@ -18,18 +18,20 @@ export class ExemploService extends CrudWithAuditService<
   EntityId,
   CreateExemploDto
 > {
+  private repositoryWithAudit: ExemploRepositoryWithAudit;
+
   constructor(
     @InjectRepository(Exemplo)
     entityRepository: Repository<Exemplo>,
     @InjectRepository(ExemploAudit)
     auditRepository: Repository<ExemploAudit>,
   ) {
-    super(
-      ExemploRepositoryWithAudit.createInstance(
-        entityRepository,
-        auditRepository,
-      ),
+    const repositoryWithAudit = ExemploRepositoryWithAudit.createInstance(
+      entityRepository,
+      auditRepository,
     );
+    super(repositoryWithAudit);
+    this.repositoryWithAudit = repositoryWithAudit;
   }
 
   public createEntity(

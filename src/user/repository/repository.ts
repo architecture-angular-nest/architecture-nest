@@ -36,4 +36,9 @@ export class UserRepositoryWithAudit extends TypeOrmWithAuditRepository<
 
     return this.instance;
   }
+  public findByEmail(email: string): Promise<User> {
+    return this.findOne({
+      where: { email: email.toLowerCase() },
+    });
+  }
 }

@@ -18,6 +18,8 @@ export class UserService extends CrudWithAuditService<
   EntityId,
   CreateUserDto
 > {
+  private repositoryWithAudit: UserRepositoryWithAudit;
+
   constructor(
     private readonly utilityService: UtilityService,
     @InjectRepository(User)
@@ -25,18 +27,22 @@ export class UserService extends CrudWithAuditService<
     @InjectRepository(UserAudit)
     auditRepository: Repository<UserAudit>,
   ) {
-    super(
-      UserRepositoryWithAudit.createInstance(entityRepository, auditRepository),
+    const repositoryWithAudit = UserRepositoryWithAudit.createInstance(
+      entityRepository,
+      auditRepository,
     );
+    super(repositoryWithAudit);
+
+    this.repositoryWithAudit = repositoryWithAudit;
   }
 
   public async createEntity(
     createEntityDto: CreateUserDto,
     actionDoneBy?: Express.User,
   ): Promise<User> {
-    const emailUserAlreadyExists = await this.findOne({
-      where: { email: createEntityDto.email.toLowerCase() },
-    });
+    const emailUserAlreadyExists = await this.repositoryWithAudit.findByEmail(
+      createEntityDto.email.toLowerCase(),
+    );
     if (emailUserAlreadyExists) {
       throw new HttpException(
         'E-mail already registered',
