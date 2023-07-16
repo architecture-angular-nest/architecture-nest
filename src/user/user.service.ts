@@ -7,22 +7,27 @@ import { User } from './entities/user.entity';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UserAudit } from './entities/user-audit.entity';
 import { EntityId } from './../core/architecture/types/enity-id';
-import { TypeOrmWithAuditRepository } from '../core/architecture/repositories/typeorm/typeorm-with-audit.repository';
+import { UserRepositoryWithAudit } from './repository/repository';
+import { UtilityService } from './../shared/services/utility.service';
+import { CrudWithAuditService } from 'src/core/architecture/services/crud-with-audit.service';
 
 @Injectable()
-export class UserService extends TypeOrmWithAuditRepository<
+export class UserService extends CrudWithAuditService<
   User,
   UserAudit,
   EntityId,
   CreateUserDto
 > {
   constructor(
+    private readonly utilityService: UtilityService,
     @InjectRepository(User)
-    private readonly userRepository: Repository<User>,
+    entityRepository: Repository<User>,
     @InjectRepository(UserAudit)
-    private readonly userAuditRepository: Repository<UserAudit>,
+    auditRepository: Repository<UserAudit>,
   ) {
-    super(userRepository, userAuditRepository);
+    super(
+      UserRepositoryWithAudit.createInstance(entityRepository, auditRepository),
+    );
   }
 
   public async createEntity(
@@ -32,7 +37,6 @@ export class UserService extends TypeOrmWithAuditRepository<
     const emailUserAlreadyExists = await this.findOne({
       where: { email: createEntityDto.email.toLowerCase() },
     });
-
     if (emailUserAlreadyExists) {
       throw new HttpException(
         'E-mail already registered',
@@ -40,7 +44,7 @@ export class UserService extends TypeOrmWithAuditRepository<
       );
     }
 
-    const createdUser: User = await this.create(
+    const createdUser: User = await this.createEntity(
       {
         ...createEntityDto,
         email: createEntityDto.email.toLowerCase(),

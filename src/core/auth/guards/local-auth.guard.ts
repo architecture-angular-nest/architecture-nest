@@ -23,6 +23,8 @@ export class LocalAuthGuard extends AuthGuard('local') {
     context: ExecutionContext,
     status?: any,
   ): TUser {
+    console.log('user', user);
+    console.log('err', err);
     if (err || !user) {
       throw new HttpException(
         'E-mail and/or Password incorrect',

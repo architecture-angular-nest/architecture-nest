@@ -1,15 +1,35 @@
+import { CrudOperations } from './crud-operations';
 import { PaginatedList } from './paginated-list';
-import { RepositoryOperations } from './reapository-operations';
 
-export interface RepositoryWithAuditOperations<
+export interface CrudWithAuditOperations<
   Entity,
   EntityToAudit,
   ID,
   CreateEntityDto,
-> extends RepositoryOperations<Entity, ID, CreateEntityDto> {
+> extends CrudOperations<Entity, ID, CreateEntityDto> {
+  create(createEntityDto: CreateEntityDto, actionDoneBy: ID): Promise<Entity>;
+
+  update(
+    updateEntityDto: Partial<CreateEntityDto>,
+    actionDoneBy: ID,
+    actionDescription?: string,
+  ): Promise<Entity>;
+
+  softDelete<T>(
+    options: T,
+    actionDoneBy: ID,
+    actionDescription?: string,
+  ): Promise<void>;
+
+  delete<T>(
+    options: T,
+    actionDoneBy: ID,
+    actionDescription?: string,
+  ): Promise<void>;
+
   restore<T>(
     options: T,
-    actionDoneBy?: ID,
+    actionDoneBy: ID,
     actionDescription?: string,
   ): Promise<Entity>;
 

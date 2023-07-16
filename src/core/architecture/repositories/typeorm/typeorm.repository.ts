@@ -1,5 +1,4 @@
 import { EntityId } from './../../types/enity-id';
-import { InjectRepository } from '@nestjs/typeorm';
 import { HttpException, HttpStatus, Inject } from '@nestjs/common';
 
 import {
@@ -10,23 +9,25 @@ import {
   Repository,
 } from 'typeorm';
 import { PaginatedList } from '../../interfaces/paginated-list';
+import { CrudOperations } from '../../interfaces/crud-operations';
 import { GeneralEntity } from '../../entities/typeorm/general-entity.entity';
 import { UtilityService } from '../../../../shared/services/utility.service';
-import { RepositoryOperations } from '../../interfaces/reapository-operations';
+import { GeneralRepository } from '../general.repository';
 
 export abstract class TypeOrmRepository<
-  Entity extends GeneralEntity,
-  ID,
-  CreateEntityDto,
-> implements RepositoryOperations<Entity, ID, CreateEntityDto>
+    Entity extends GeneralEntity,
+    ID,
+    CreateEntityDto,
+  >
+  extends GeneralRepository<Entity, ID, CreateEntityDto>
+  implements CrudOperations<Entity, ID, CreateEntityDto>
 {
   @Inject(UtilityService)
   protected readonly utilityService: UtilityService;
 
-  constructor(
-    @InjectRepository(GeneralEntity)
-    protected entityRepository: Repository<Entity>,
-  ) {}
+  constructor(protected entityRepository: Repository<Entity>) {
+    super();
+  }
 
   public async create(
     createEntityDto: CreateEntityDto,

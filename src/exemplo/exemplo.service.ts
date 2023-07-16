@@ -8,10 +8,11 @@ import { UpdateExemploDto } from './dto/update-exemplo.dto';
 import { ExemploAudit } from './entities/exemplo-audit.entity';
 import { EntityId } from './../core/architecture/types/enity-id';
 import { ActionAuditEnum } from './../core/architecture/enums/action-audit.enum';
-import { TypeOrmWithAuditRepository } from '../core/architecture/repositories/typeorm/typeorm-with-audit.repository';
+import { CrudWithAuditService } from 'src/core/architecture/services/crud-with-audit.service';
+import { ExemploRepositoryWithAudit } from './repository/repository';
 
 @Injectable()
-export class ExemploService extends TypeOrmWithAuditRepository<
+export class ExemploService extends CrudWithAuditService<
   Exemplo,
   ExemploAudit,
   EntityId,
@@ -19,18 +20,23 @@ export class ExemploService extends TypeOrmWithAuditRepository<
 > {
   constructor(
     @InjectRepository(Exemplo)
-    private readonly exemploRepository: Repository<Exemplo>,
+    entityRepository: Repository<Exemplo>,
     @InjectRepository(ExemploAudit)
-    private readonly exemploAuditRepository: Repository<ExemploAudit>,
+    auditRepository: Repository<ExemploAudit>,
   ) {
-    super(exemploRepository, exemploAuditRepository);
+    super(
+      ExemploRepositoryWithAudit.createInstance(
+        entityRepository,
+        auditRepository,
+      ),
+    );
   }
 
   public createEntity(
     createEntityDto: CreateExemploDto,
     actionDoneBy?: Express.User,
   ): Promise<Exemplo> {
-    return this.create(createEntityDto, actionDoneBy['id']);
+    return this.createEntity(createEntityDto, actionDoneBy['id']);
   }
 
   public findAllEntity(): Promise<Exemplo[]> {

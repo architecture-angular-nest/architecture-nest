@@ -1,4 +1,3 @@
-import { InjectRepository } from '@nestjs/typeorm';
 import { HttpException, HttpStatus, Inject } from '@nestjs/common';
 
 import {
@@ -12,28 +11,36 @@ import {
   FindOptionsWhere,
   Repository,
 } from 'typeorm';
-import { AuditEntity } from '../../entities/typeorm/audit-entity.entity';
 import { ActionAuditEnum } from '../../enums/action-audit.enum';
 import { PaginatedList } from '../../interfaces/paginated-list';
-import { UtilityService } from '../../../../shared/services/utility.service';
-import { RepositoryWithAuditOperations } from '../../interfaces/reapository-with-audit-operations';
+import { AuditEntity } from '../../entities/typeorm/audit-entity.entity';
 import { GeneralEntity } from '../../entities/typeorm/general-entity.entity';
+import { UtilityService } from '../../../../shared/services/utility.service';
+import { CrudWithAuditOperations } from '../../interfaces/crud-with-audit-operations';
+import { GeneralWithAuditRepository } from '../general-with-audit.repository';
+import { InjectRepository } from '@nestjs/typeorm';
 
 export abstract class TypeOrmWithAuditRepository<
-  Entity extends GeneralEntity,
-  EntityToAudit extends AuditEntity,
-  ID,
-  CreateEntityDto,
-> implements
-    RepositoryWithAuditOperations<Entity, EntityToAudit, ID, CreateEntityDto>
+    Entity extends GeneralEntity,
+    EntityToAudit extends AuditEntity,
+    ID,
+    CreateEntityDto,
+  >
+  extends GeneralWithAuditRepository<Entity, EntityToAudit, ID, CreateEntityDto>
+  implements
+    CrudWithAuditOperations<Entity, EntityToAudit, ID, CreateEntityDto>
 {
   @Inject(UtilityService)
   protected readonly utilityService: UtilityService;
 
   constructor(
+    @InjectRepository(GeneralEntity)
     protected entityRepository: Repository<Entity>,
+    @InjectRepository(AuditEntity)
     protected auditRepository: Repository<EntityToAudit>,
-  ) {}
+  ) {
+    super();
+  }
 
   public async create(
     createEntityDto: CreateEntityDto,

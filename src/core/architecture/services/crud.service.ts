@@ -1,0 +1,72 @@
+import { GeneralEntity } from '../entities/typeorm/general-entity.entity';
+import { CrudOperations } from '../interfaces/crud-operations';
+import { PaginatedList } from '../interfaces/paginated-list';
+
+export abstract class CrudService<
+  Entity extends GeneralEntity,
+  ID,
+  CreateEntityDto,
+> implements CrudOperations<Entity, ID, CreateEntityDto>
+{
+  constructor(
+    protected entityRepository: CrudOperations<Entity, ID, CreateEntityDto>,
+  ) {}
+
+  public async create(
+    createEntityDto: CreateEntityDto,
+    actionDoneBy: ID,
+  ): Promise<Entity> {
+    return await this.entityRepository.create(createEntityDto, actionDoneBy);
+  }
+
+  public async findOne(options?: unknown): Promise<Entity> {
+    return await this.entityRepository.findOne(options);
+  }
+
+  public async find(options?: unknown): Promise<Entity[]> {
+    return await this.entityRepository.find(options);
+  }
+
+  public async findWithPaginator(
+    page: number,
+    limit: number,
+  ): Promise<PaginatedList<Entity>> {
+    return await this.entityRepository.findWithPaginator(limit, page);
+  }
+
+  public async update(
+    updateEntityDto: Partial<CreateEntityDto>,
+    actionDoneBy: ID,
+    actionDescription?: string,
+  ): Promise<Entity> {
+    return await this.entityRepository.update(
+      updateEntityDto,
+      actionDoneBy,
+      actionDescription,
+    );
+  }
+
+  public async softDelete(
+    options: unknown,
+    actionDoneBy?: ID,
+    actionDescription?: string,
+  ): Promise<void> {
+    return await this.entityRepository.softDelete(
+      options,
+      actionDoneBy,
+      actionDescription,
+    );
+  }
+
+  public async delete(
+    options: unknown,
+    actionDoneBy?: ID,
+    actionDescription?: string,
+  ): Promise<void> {
+    return await this.entityRepository.delete(
+      options,
+      actionDoneBy,
+      actionDescription,
+    );
+  }
+}
