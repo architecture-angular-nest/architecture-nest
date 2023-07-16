@@ -1,4 +1,3 @@
-import { EntityId } from './../../types/enity-id';
 import { HttpException, HttpStatus, Inject } from '@nestjs/common';
 
 import {
@@ -8,11 +7,12 @@ import {
   FindOneOptions,
   Repository,
 } from 'typeorm';
+import { EntityId } from './../../types/enity-id';
+import { GeneralRepository } from '../general.repository';
 import { PaginatedList } from '../../interfaces/paginated-list';
 import { CrudOperations } from '../../interfaces/crud-operations';
 import { GeneralEntity } from '../../entities/typeorm/general-entity.entity';
 import { UtilityService } from '../../../../shared/services/utility.service';
-import { GeneralRepository } from '../general.repository';
 
 export abstract class TypeOrmRepository<
     Entity extends GeneralEntity,

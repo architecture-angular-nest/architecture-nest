@@ -1,6 +1,5 @@
-import { GeneralEntity } from '../entities/typeorm/general-entity.entity';
-import { CrudOperations } from '../interfaces/crud-operations';
 import { PaginatedList } from '../interfaces/paginated-list';
+import { CrudOperations } from '../interfaces/crud-operations';
 
 export abstract class GeneralRepository<Entity, ID, CreateEntityDto>
   implements CrudOperations<Entity, ID, CreateEntityDto>

@@ -7,9 +7,9 @@ import { CreateExemploDto } from './dto/create-exemplo.dto';
 import { UpdateExemploDto } from './dto/update-exemplo.dto';
 import { ExemploAudit } from './entities/exemplo-audit.entity';
 import { EntityId } from './../core/architecture/types/enity-id';
+import { ExemploRepositoryWithAudit } from './repository/repository';
 import { ActionAuditEnum } from './../core/architecture/enums/action-audit.enum';
 import { CrudWithAuditService } from 'src/core/architecture/services/crud-with-audit.service';
-import { ExemploRepositoryWithAudit } from './repository/repository';
 
 @Injectable()
 export class ExemploService extends CrudWithAuditService<
