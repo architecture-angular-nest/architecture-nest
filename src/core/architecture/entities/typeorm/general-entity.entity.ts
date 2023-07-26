@@ -4,7 +4,7 @@ import {
   DeleteDateColumn,
   PrimaryGeneratedColumn,
 } from 'typeorm';
-import { EntityId } from '../../types/enity-id';
+import { EntityId } from '../../types/enity-id.type';
 
 export class GeneralEntity {
   @PrimaryGeneratedColumn()

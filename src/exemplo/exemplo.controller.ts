@@ -17,7 +17,7 @@ import { CurrentUser } from 'src/core/auth/decorators/current-user.decorator';
 
 @Controller('exemplo')
 export class ExemploController {
-  constructor(private readonly exemploService: ExemploService) {}
+  constructor(private readonly exemploService: ExemploService) { }
 
   @Post()
   public async create(
@@ -52,8 +52,6 @@ export class ExemploController {
 
       return res.status(200).send(allEntity);
     } catch (error) {
-      console.log(error);
-
       return res
         .status(error.status || 500)
         .send(

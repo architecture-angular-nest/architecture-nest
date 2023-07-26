@@ -2,7 +2,6 @@ import { AuditEntity } from '../entities/typeorm/audit-entity.entity';
 import { GeneralEntity } from '../entities/typeorm/general-entity.entity';
 import { CrudWithAuditOperations } from '../interfaces/crud-with-audit-operations';
 import { PaginatedList } from '../interfaces/paginated-list';
-import { GeneralWithAuditRepository } from '../repositories/general-with-audit.repository';
 
 export abstract class CrudWithAuditService<
   Entity extends GeneralEntity,
@@ -10,16 +9,16 @@ export abstract class CrudWithAuditService<
   ID,
   CreateEntityDto,
 > implements
-    CrudWithAuditOperations<Entity, EntityToAudit, ID, CreateEntityDto>
+  CrudWithAuditOperations<Entity, EntityToAudit, ID, CreateEntityDto>
 {
   constructor(
-    protected entityRepository: GeneralWithAuditRepository<
+    protected entityRepository: CrudWithAuditOperations<
       Entity,
       EntityToAudit,
       ID,
       CreateEntityDto
     >,
-  ) {}
+  ) { }
 
   public async create(
     createEntityDto: CreateEntityDto,

@@ -1,4 +1,4 @@
-import { EntityId } from '../../types/enity-id';
+import { EntityId } from '../../types/enity-id.type';
 import { Column, PrimaryGeneratedColumn } from 'typeorm';
 
 export class AuditEntity {

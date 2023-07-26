@@ -4,7 +4,7 @@ import { Repository } from 'typeorm';
 import { User } from '../entities/user.entity';
 import { CreateUserDto } from '../dto/create-user.dto';
 import { UserAudit } from '../entities/user-audit.entity';
-import { EntityId } from './../../core/architecture/types/enity-id';
+import { EntityId } from '../../core/architecture/types/enity-id.type';
 import { TypeOrmWithAuditRepository } from '../../core/architecture/repositories/typeorm/typeorm-with-audit.repository';
 export class UserRepositoryWithAudit extends TypeOrmWithAuditRepository<
   User,
@@ -36,6 +36,7 @@ export class UserRepositoryWithAudit extends TypeOrmWithAuditRepository<
 
     return this.instance;
   }
+
   public findByEmail(email: string): Promise<User> {
     return this.findOne({
       where: { email: email.toLowerCase() },

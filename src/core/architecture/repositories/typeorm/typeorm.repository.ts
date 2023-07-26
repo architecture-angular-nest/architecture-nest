@@ -7,27 +7,23 @@ import {
   FindOneOptions,
   Repository,
 } from 'typeorm';
-import { EntityId } from './../../types/enity-id';
-import { GeneralRepository } from '../general.repository';
+import { EntityId } from '../../types/enity-id.type';
 import { PaginatedList } from '../../interfaces/paginated-list';
 import { CrudOperations } from '../../interfaces/crud-operations';
 import { GeneralEntity } from '../../entities/typeorm/general-entity.entity';
 import { UtilityService } from '../../../../shared/services/utility.service';
 
 export abstract class TypeOrmRepository<
-    Entity extends GeneralEntity,
-    ID,
-    CreateEntityDto,
-  >
-  extends GeneralRepository<Entity, ID, CreateEntityDto>
+  Entity extends GeneralEntity,
+  ID,
+  CreateEntityDto,
+>
   implements CrudOperations<Entity, ID, CreateEntityDto>
 {
   @Inject(UtilityService)
   protected readonly utilityService: UtilityService;
 
-  constructor(protected entityRepository: Repository<Entity>) {
-    super();
-  }
+  constructor(protected entityRepository: Repository<Entity>) { }
 
   public async create(
     createEntityDto: CreateEntityDto,

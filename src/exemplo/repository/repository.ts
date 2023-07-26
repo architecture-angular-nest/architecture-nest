@@ -2,7 +2,7 @@ import dataSource from 'database/data-source';
 import { Exemplo } from './../entities/exemplo.entity';
 import { CreateExemploDto } from './../dto/create-exemplo.dto';
 import { ExemploAudit } from './../entities/exemplo-audit.entity';
-import { EntityId } from './../../core/architecture/types/enity-id';
+import { EntityId } from '../../core/architecture/types/enity-id.type';
 import { TypeOrmWithAuditRepository } from '../../core/architecture/repositories/typeorm/typeorm-with-audit.repository';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';

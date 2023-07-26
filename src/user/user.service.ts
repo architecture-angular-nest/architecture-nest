@@ -6,7 +6,7 @@ import { Repository } from 'typeorm';
 import { User } from './entities/user.entity';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UserAudit } from './entities/user-audit.entity';
-import { EntityId } from './../core/architecture/types/enity-id';
+import { EntityId } from '../core/architecture/types/enity-id.type';
 import { UserRepositoryWithAudit } from './repository/repository';
 import { UtilityService } from './../shared/services/utility.service';
 import { CrudWithAuditService } from 'src/core/architecture/services/crud-with-audit.service';
