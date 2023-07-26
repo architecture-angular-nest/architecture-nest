@@ -1,34 +1,32 @@
 import dataSource from 'database/data-source';
 import { Exemplo } from './../entities/exemplo.entity';
 import { CreateExemploDto } from './../dto/create-exemplo.dto';
+import { Repository } from 'typeorm';
 import { ExemploAudit } from './../entities/exemplo-audit.entity';
 import { EntityId } from '../../core/architecture/types/enity-id.type';
 import { TypeOrmWithAuditRepository } from '../../core/architecture/repositories/typeorm/typeorm-with-audit.repository';
-import { InjectRepository } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
-export class ExemploRepositoryWithAudit extends TypeOrmWithAuditRepository<
+
+class ExemploRepository extends TypeOrmWithAuditRepository<
   Exemplo,
   ExemploAudit,
   EntityId,
   CreateExemploDto
 > {
-  private static instance: ExemploRepositoryWithAudit | null = null;
+  public static instance: ExemploRepository | null = null;
 
   private constructor(
-    @InjectRepository(Exemplo)
     protected readonly entityRepository: Repository<Exemplo>,
-    @InjectRepository(ExemploAudit)
     protected readonly auditRepository: Repository<ExemploAudit>,
   ) {
     super(entityRepository, auditRepository);
   }
 
-  static createInstance(
+  public static createInstance(
     entityRepository: Repository<Exemplo>,
     auditRepository: Repository<ExemploAudit>,
-  ): ExemploRepositoryWithAudit {
-    if (!ExemploRepositoryWithAudit.instance) {
-      ExemploRepositoryWithAudit.instance = new ExemploRepositoryWithAudit(
+  ): ExemploRepository {
+    if (!ExemploRepository.instance) {
+      ExemploRepository.instance = new ExemploRepository(
         entityRepository,
         auditRepository,
       );
@@ -37,3 +35,16 @@ export class ExemploRepositoryWithAudit extends TypeOrmWithAuditRepository<
     return this.instance;
   }
 }
+
+export const getRepository = async () => {
+  const dS = await dataSource;
+  if (!ExemploRepository.instance) {
+    const entityRepository: Repository<Exemplo> = dS.getRepository(Exemplo);
+    const auditRepository: Repository<ExemploAudit> =
+      dS.getRepository(ExemploAudit);
+
+    return ExemploRepository.createInstance(entityRepository, auditRepository);
+  }
+
+  return ExemploRepository.instance;
+};

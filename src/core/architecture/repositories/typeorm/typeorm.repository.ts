@@ -17,11 +17,9 @@ export abstract class TypeOrmRepository<
   Entity extends GeneralEntity,
   ID,
   CreateEntityDto,
->
-  implements CrudOperations<Entity, ID, CreateEntityDto>
+> implements CrudOperations<Entity, ID, CreateEntityDto>
 {
-  @Inject(UtilityService)
-  protected readonly utilityService: UtilityService;
+  protected readonly utilityService: UtilityService = new UtilityService();
 
   constructor(protected entityRepository: Repository<Entity>) { }
 

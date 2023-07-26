@@ -12,4 +12,4 @@ import { SharedModule } from 'src/shared/shared.module';
   controllers: [ExemploController],
   providers: [ExemploService],
 })
-export class ExemploModule {}
+export class ExemploModule { }

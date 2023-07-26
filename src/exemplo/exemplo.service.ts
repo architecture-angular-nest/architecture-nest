@@ -1,37 +1,26 @@
 import { Injectable } from '@nestjs/common';
-import { InjectRepository } from '@nestjs/typeorm';
 
 import { Exemplo } from './entities/exemplo.entity';
-import { FindOneOptions, Repository } from 'typeorm';
 import { CreateExemploDto } from './dto/create-exemplo.dto';
 import { UpdateExemploDto } from './dto/update-exemplo.dto';
 import { ExemploAudit } from './entities/exemplo-audit.entity';
 import { EntityId } from '../core/architecture/types/enity-id.type';
-import { ExemploRepositoryWithAudit } from './repository/repository';
+import { getRepository } from './repository/repository';
 import { ActionAuditEnum } from './../core/architecture/enums/action-audit.enum';
 import { CrudWithAuditService } from 'src/core/architecture/services/crud-with-audit.service';
+import { IExemploService } from './interfaces/exemplo-service.interface';
 
 @Injectable()
-export class ExemploService extends CrudWithAuditService<
-  Exemplo,
-  ExemploAudit,
-  EntityId,
-  CreateExemploDto
-> {
-  private repositoryWithAudit: ExemploRepositoryWithAudit;
-
-  constructor(
-    @InjectRepository(Exemplo)
-    entityRepository: Repository<Exemplo>,
-    @InjectRepository(ExemploAudit)
-    auditRepository: Repository<ExemploAudit>,
-  ) {
-    const repositoryWithAudit = ExemploRepositoryWithAudit.createInstance(
-      entityRepository,
-      auditRepository,
-    );
-    super(repositoryWithAudit);
-    this.repositoryWithAudit = repositoryWithAudit;
+export class ExemploService
+  extends CrudWithAuditService<
+    Exemplo,
+    ExemploAudit,
+    EntityId,
+    CreateExemploDto
+  >
+  implements IExemploService {
+  constructor() {
+    super(getRepository());
   }
 
   public createEntity(
@@ -45,13 +34,8 @@ export class ExemploService extends CrudWithAuditService<
     return this.find();
   }
 
-  public findOneEntity(
-    id?: number,
-    options?: FindOneOptions<Exemplo>,
-  ): Promise<Exemplo> {
-    const optionsQuery = (
-      !!id ? { where: { id } } : options
-    ) as FindOneOptions<Exemplo>;
+  public findOneEntity(id?: number, options?: object): Promise<Exemplo> {
+    const optionsQuery = !!id ? { where: { id } } : options;
 
     return this.findOne(optionsQuery);
   }

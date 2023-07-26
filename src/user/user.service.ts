@@ -1,13 +1,11 @@
-import { InjectRepository } from '@nestjs/typeorm';
 import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
 
 import * as bcrypt from 'bcrypt';
-import { Repository } from 'typeorm';
 import { User } from './entities/user.entity';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UserAudit } from './entities/user-audit.entity';
 import { EntityId } from '../core/architecture/types/enity-id.type';
-import { UserRepositoryWithAudit } from './repository/repository';
+import { getRepository } from './repository/repository';
 import { UtilityService } from './../shared/services/utility.service';
 import { CrudWithAuditService } from 'src/core/architecture/services/crud-with-audit.service';
 
@@ -18,29 +16,16 @@ export class UserService extends CrudWithAuditService<
   EntityId,
   CreateUserDto
 > {
-  private repositoryWithAudit: UserRepositoryWithAudit;
-
-  constructor(
-    private readonly utilityService: UtilityService,
-    @InjectRepository(User)
-    entityRepository: Repository<User>,
-    @InjectRepository(UserAudit)
-    auditRepository: Repository<UserAudit>,
-  ) {
-    const repositoryWithAudit = UserRepositoryWithAudit.createInstance(
-      entityRepository,
-      auditRepository,
-    );
-    super(repositoryWithAudit);
-
-    this.repositoryWithAudit = repositoryWithAudit;
+  constructor(private readonly utilityService: UtilityService) {
+    super(getRepository());
   }
 
   public async createEntity(
     createEntityDto: CreateUserDto,
     actionDoneBy?: Express.User,
   ): Promise<User> {
-    const emailUserAlreadyExists = await this.repositoryWithAudit.findByEmail(
+    const repository = await getRepository();
+    const emailUserAlreadyExists = await repository.findByEmail(
       createEntityDto.email.toLowerCase(),
     );
     if (emailUserAlreadyExists) {
@@ -68,13 +53,15 @@ export class UserService extends CrudWithAuditService<
       password: undefined,
     };
   }
-  findOneWithEspacificFildsByEmail(fields: string[], email: string) {
+
+  public async findOneWithEspacificFildsByEmail(fields: string[], email: string) {
     const formatedFilds: object = {};
     Object.keys(fields).forEach((field: string, i: number) => {
       formatedFilds[`${fields[i]}`] = true;
     });
+    const repository = await getRepository();
 
-    return this.repositoryWithAudit.findOneWithEspacificFildsByEmail(
+    return repository.findOneWithEspacificFildsByEmail(
       formatedFilds,
       email.toLowerCase(),
     );

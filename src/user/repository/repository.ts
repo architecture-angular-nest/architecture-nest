@@ -1,23 +1,20 @@
-import { InjectRepository } from '@nestjs/typeorm';
-
 import { Repository } from 'typeorm';
+import dataSource from 'database/data-source';
 import { User } from '../entities/user.entity';
 import { CreateUserDto } from '../dto/create-user.dto';
 import { UserAudit } from '../entities/user-audit.entity';
 import { EntityId } from '../../core/architecture/types/enity-id.type';
 import { TypeOrmWithAuditRepository } from '../../core/architecture/repositories/typeorm/typeorm-with-audit.repository';
-export class UserRepositoryWithAudit extends TypeOrmWithAuditRepository<
+class UserRepositoryWithAudit extends TypeOrmWithAuditRepository<
   User,
   UserAudit,
   EntityId,
   CreateUserDto
 > {
-  private static instance: UserRepositoryWithAudit | null = null;
+  public static instance: UserRepositoryWithAudit | null = null;
 
   private constructor(
-    @InjectRepository(User)
     protected readonly entityRepository: Repository<User>,
-    @InjectRepository(UserAudit)
     protected readonly auditRepository: Repository<UserAudit>,
   ) {
     super(entityRepository, auditRepository);
@@ -54,3 +51,18 @@ export class UserRepositoryWithAudit extends TypeOrmWithAuditRepository<
     });
   }
 }
+
+export const getRepository = async () => {
+  const dS = await dataSource;
+  if (!UserRepositoryWithAudit.instance) {
+    const entityRepository: Repository<User> = dS.getRepository(User);
+    const auditRepository: Repository<UserAudit> = dS.getRepository(UserAudit);
+
+    return UserRepositoryWithAudit.createInstance(
+      entityRepository,
+      auditRepository,
+    );
+  }
+
+  return UserRepositoryWithAudit.instance;
+};

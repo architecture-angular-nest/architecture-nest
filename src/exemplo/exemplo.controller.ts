@@ -52,6 +52,8 @@ export class ExemploController {
 
       return res.status(200).send(allEntity);
     } catch (error) {
+      console.log(error);
+
       return res
         .status(error.status || 500)
         .send(

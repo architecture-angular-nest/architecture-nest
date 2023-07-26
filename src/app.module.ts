@@ -20,7 +20,6 @@ import { JwtAuthGuard } from './core/auth/guards/jwt-auth.guard';
     TypeOrmModule.forRoot({
       ...dataSourceOptions,
       autoLoadEntities: true,
-      synchronize: true,
     }),
     ExemploModule,
     AuthModule,
@@ -35,4 +34,4 @@ import { JwtAuthGuard } from './core/auth/guards/jwt-auth.guard';
     },
   ],
 })
-export class AppModule {}
+export class AppModule { }

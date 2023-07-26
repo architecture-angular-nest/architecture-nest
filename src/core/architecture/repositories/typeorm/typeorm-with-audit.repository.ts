@@ -28,8 +28,7 @@ export abstract class TypeOrmWithAuditRepository<
   implements
   CrudWithAuditOperations<Entity, EntityToAudit, ID, CreateEntityDto>
 {
-  @Inject(UtilityService)
-  protected readonly utilityService: UtilityService;
+  protected readonly utilityService: UtilityService = new UtilityService();
 
   constructor(
     @InjectRepository(GeneralEntity)
@@ -270,7 +269,7 @@ export abstract class TypeOrmWithAuditRepository<
           newValue: !!newValue ? newValue : null,
           actionDescription: actionDescription,
           timestamp:
-            this.utilityService.returnStringDateWithBrazilianTimeZone(),
+            this.utilityService?.returnStringDateWithBrazilianTimeZone(),
         } as DeepPartial<EntityToAudit>);
         await entiyManager.save(entityAudit as EntityToAudit);
       },

@@ -34,13 +34,14 @@ export class UtilityService {
     return differenceInMinutes;
   }
 
-  public returnStringDateWithBrazilianTimeZone(datePassed?: Date): Date {
-    const date: Date = !datePassed ? new Date() : datePassed;
+  public returnStringDateWithBrazilianTimeZone(
+    datePassed: Date = new Date(),
+  ): Date {
     const options: object = {
       timeZone: 'America/Sao_Paulo',
       hour12: false,
     };
-    const timestamp: string = date.toLocaleString('pt-BR', options);
+    const timestamp: string = datePassed.toLocaleString('pt-BR', options);
     const dateData: string[] = timestamp
       .split('/')
       .join()
