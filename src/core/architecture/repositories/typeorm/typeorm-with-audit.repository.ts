@@ -24,9 +24,8 @@ export abstract class TypeOrmWithAuditRepository<
   EntityToAudit extends AuditEntity,
   ID,
   CreateEntityDto,
->
-  implements
-  CrudWithAuditOperations<Entity, EntityToAudit, ID, CreateEntityDto>
+> implements
+    CrudWithAuditOperations<Entity, EntityToAudit, ID, CreateEntityDto>
 {
   protected readonly utilityService: UtilityService = new UtilityService();
 
@@ -35,7 +34,7 @@ export abstract class TypeOrmWithAuditRepository<
     protected entityRepository: Repository<Entity>,
     @InjectRepository(AuditEntity)
     protected auditRepository: Repository<EntityToAudit>,
-  ) { }
+  ) {}
 
   public async create(
     createEntityDto: CreateEntityDto,
@@ -117,8 +116,8 @@ export abstract class TypeOrmWithAuditRepository<
           entity.id,
           lastChange.length > 0
             ? {
-              ...lastChange[0].newValue,
-            }
+                ...lastChange[0].newValue,
+              }
             : null,
           entity as object,
           actionDescription,
@@ -163,10 +162,11 @@ export abstract class TypeOrmWithAuditRepository<
           ActionAuditEnum.SOFTDELETE,
           actionDoneBy,
           entity.id,
-          lastChange.length > 0 ?
-            {
-              ...lastChange[0].newValue,
-            } : null,
+          lastChange.length > 0
+            ? {
+                ...lastChange[0].newValue,
+              }
+            : null,
           newValue as object,
           actionDescription,
         );
@@ -206,8 +206,8 @@ export abstract class TypeOrmWithAuditRepository<
           entity.id,
           lastChange.length > 0
             ? {
-              ...lastChange[0].newValue,
-            }
+                ...lastChange[0].newValue,
+              }
             : null,
           entity as object,
           actionDescription,

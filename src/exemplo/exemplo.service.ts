@@ -18,7 +18,8 @@ export class ExemploService
     EntityId,
     CreateExemploDto
   >
-  implements IExemploService {
+  implements IExemploService
+{
   constructor() {
     super(getRepository());
   }

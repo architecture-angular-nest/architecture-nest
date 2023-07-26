@@ -34,4 +34,4 @@ import { JwtAuthGuard } from './core/auth/guards/jwt-auth.guard';
     },
   ],
 })
-export class AppModule { }
+export class AppModule {}

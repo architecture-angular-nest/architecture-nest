@@ -17,7 +17,7 @@ import { CurrentUser } from 'src/core/auth/decorators/current-user.decorator';
 
 @Controller('exemplo')
 export class ExemploController {
-  constructor(private readonly exemploService: ExemploService) { }
+  constructor(private readonly exemploService: ExemploService) {}
 
   @Post()
   public async create(

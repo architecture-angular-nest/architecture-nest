@@ -7,22 +7,22 @@ import { CrudWithAuditOperations } from 'src/core/architecture/interfaces/crud-w
 import { UpdateExemploDto } from '../dto/update-exemplo.dto';
 
 export interface IExemploService
-    extends CrudWithAuditOperations<
-        Exemplo,
-        ExemploAudit,
-        EntityId,
-        CreateExemploDto
-    > {
-    createEntity(
-        createEntityDto: CreateExemploDto,
-        actionDoneBy?: Express.User,
-    ): Promise<Exemplo>;
-    findAllEntity(): Promise<Exemplo[]>;
-    findOneEntity(id?: number, options?: object): Promise<Exemplo>;
-    updateEntity(
-        id: number,
-        updateEntityDto: UpdateExemploDto,
-        actionDoneBy?: Express.User,
-    ): Promise<Exemplo>;
-    removeEntity(id: number, actionDoneBy?: Express.User): Promise<void>;
+  extends CrudWithAuditOperations<
+    Exemplo,
+    ExemploAudit,
+    EntityId,
+    CreateExemploDto
+  > {
+  createEntity(
+    createEntityDto: CreateExemploDto,
+    actionDoneBy?: Express.User,
+  ): Promise<Exemplo>;
+  findAllEntity(): Promise<Exemplo[]>;
+  findOneEntity(id?: number, options?: object): Promise<Exemplo>;
+  updateEntity(
+    id: number,
+    updateEntityDto: UpdateExemploDto,
+    actionDoneBy?: Express.User,
+  ): Promise<Exemplo>;
+  removeEntity(id: number, actionDoneBy?: Express.User): Promise<void>;
 }

@@ -1,16 +1,14 @@
 import { CrudOperations } from '../interfaces/crud-operations';
 import { PaginatedList } from '../interfaces/paginated-list';
 
-export abstract class CrudService<
-  Entity,
-  ID,
-  CreateEntityDto,
-> implements CrudOperations<Entity, ID, CreateEntityDto>
+export abstract class CrudService<Entity, ID, CreateEntityDto>
+  implements CrudOperations<Entity, ID, CreateEntityDto>
 {
   constructor(
-    protected entityRepository: CrudOperations<Entity, ID, CreateEntityDto> |
-      Promise<CrudOperations<Entity, ID, CreateEntityDto>>,
-  ) { }
+    protected entityRepository:
+      | CrudOperations<Entity, ID, CreateEntityDto>
+      | Promise<CrudOperations<Entity, ID, CreateEntityDto>>,
+  ) {}
 
   public async create(
     createEntityDto: CreateEntityDto,
@@ -70,10 +68,6 @@ export abstract class CrudService<
     actionDescription?: string,
   ): Promise<void> {
     const repository = await this.entityRepository;
-    return await repository.delete(
-      options,
-      actionDoneBy,
-      actionDescription,
-    );
+    return await repository.delete(options, actionDoneBy, actionDescription);
   }
 }

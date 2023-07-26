@@ -21,7 +21,7 @@ export abstract class TypeOrmRepository<
 {
   protected readonly utilityService: UtilityService = new UtilityService();
 
-  constructor(protected entityRepository: Repository<Entity>) { }
+  constructor(protected entityRepository: Repository<Entity>) {}
 
   public async create(
     createEntityDto: CreateEntityDto,

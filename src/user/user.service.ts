@@ -54,7 +54,10 @@ export class UserService extends CrudWithAuditService<
     };
   }
 
-  public async findOneWithEspacificFildsByEmail(fields: string[], email: string) {
+  public async findOneWithEspacificFildsByEmail(
+    fields: string[],
+    email: string,
+  ) {
     const formatedFilds: object = {};
     Object.keys(fields).forEach((field: string, i: number) => {
       formatedFilds[`${fields[i]}`] = true;
