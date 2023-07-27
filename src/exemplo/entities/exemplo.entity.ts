@@ -1,11 +1,6 @@
-import { Column, Entity, PrimaryGeneratedColumn } from 'typeorm';
-import { GeneralEntity } from './../../core/architecture/entities/typeorm/general-entity.entity';
+import { EntityBase } from '../../core/architecture/entities/entity-base.entity';
 
-@Entity('exemplos')
-export class Exemplo extends GeneralEntity {
-  @PrimaryGeneratedColumn()
+export class Exemplo extends EntityBase {
   id: number;
-
-  @Column()
   description: string;
 }

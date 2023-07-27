@@ -1,8 +1,8 @@
-import dataSource from 'database/data-source';
-import { Exemplo } from './../entities/exemplo.entity';
-import { CreateExemploDto } from './../dto/create-exemplo.dto';
 import { Repository } from 'typeorm';
-import { ExemploAudit } from './../entities/exemplo-audit.entity';
+import { Exemplo } from '../entities/typeorm/exemplo.schema';
+import { CreateExemploDto } from './../dto/create-exemplo.dto';
+import dataSource from 'src/core/architecture/database/data-source';
+import { ExemploAudit } from '../entities/typeorm/exemplo-audit.schema';
 import { EntityId } from '../../core/architecture/types/enity-id.type';
 import { TypeOrmWithAuditRepository } from '../../core/architecture/repositories/typeorm/typeorm-with-audit.repository';
 

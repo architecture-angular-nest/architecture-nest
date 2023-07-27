@@ -8,7 +8,7 @@ import { UserModule } from './user/user.module';
 import { AppController } from './app.controller';
 import { AuthModule } from './core/auth/auth.module';
 import { ExemploModule } from './exemplo/exemplo.module';
-import { dataSourceOptions } from './../database/data-source';
+import { dataSourceOptions } from './core/architecture/database/data-source';
 import { JwtAuthGuard } from './core/auth/guards/jwt-auth.guard';
 
 @Module({

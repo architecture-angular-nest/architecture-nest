@@ -1,5 +1,5 @@
 import { Entity } from 'typeorm';
-import { AuditEntity } from 'src/core/architecture/entities/typeorm/audit-entity.entity';
+import { AuditEntityBase } from './../../core/architecture/entities/audit-entity-base.entity';
 
 @Entity('exemplos_audit')
-export class ExemploAudit extends AuditEntity {}
+export class ExemploAudit extends AuditEntityBase {}

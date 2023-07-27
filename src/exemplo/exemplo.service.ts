@@ -1,14 +1,14 @@
 import { Injectable } from '@nestjs/common';
 
-import { Exemplo } from './entities/exemplo.entity';
+import { getRepository } from './repository/repository';
 import { CreateExemploDto } from './dto/create-exemplo.dto';
 import { UpdateExemploDto } from './dto/update-exemplo.dto';
-import { ExemploAudit } from './entities/exemplo-audit.entity';
+import { Exemplo } from './entities/typeorm/exemplo.schema';
 import { EntityId } from '../core/architecture/types/enity-id.type';
-import { getRepository } from './repository/repository';
+import { ExemploAudit } from './entities/typeorm/exemplo-audit.schema';
+import { IExemploService } from './interfaces/exemplo-service.interface';
 import { ActionAuditEnum } from './../core/architecture/enums/action-audit.enum';
 import { CrudWithAuditService } from 'src/core/architecture/services/crud-with-audit.service';
-import { IExemploService } from './interfaces/exemplo-service.interface';
 
 @Injectable()
 export class ExemploService

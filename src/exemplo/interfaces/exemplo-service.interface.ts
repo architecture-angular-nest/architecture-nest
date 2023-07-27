@@ -1,10 +1,9 @@
-import { CrudWithAuditService } from 'src/core/architecture/services/crud-with-audit.service';
-import { EntityId } from 'src/core/architecture/types/enity-id';
-import { ExemploAudit } from '../entities/exemplo-audit.entity';
-import { Exemplo } from '../entities/exemplo.entity';
 import { CreateExemploDto } from '../dto/create-exemplo.dto';
-import { CrudWithAuditOperations } from 'src/core/architecture/interfaces/crud-with-audit-operations';
 import { UpdateExemploDto } from '../dto/update-exemplo.dto';
+import { Exemplo } from '../entities/typeorm/exemplo.schema';
+import { EntityId } from 'src/core/architecture/types/enity-id';
+import { ExemploAudit } from '../entities/typeorm/exemplo-audit.schema';
+import { CrudWithAuditOperations } from 'src/core/architecture/interfaces/crud-with-audit-operations';
 
 export interface IExemploService
   extends CrudWithAuditOperations<
@@ -13,16 +12,20 @@ export interface IExemploService
     EntityId,
     CreateExemploDto
   > {
-  createEntity(
+  createEntity<T>(
     createEntityDto: CreateExemploDto,
-    actionDoneBy?: Express.User,
+    actionDoneBy?: T,
   ): Promise<Exemplo>;
+
   findAllEntity(): Promise<Exemplo[]>;
+
   findOneEntity(id?: number, options?: object): Promise<Exemplo>;
-  updateEntity(
+
+  updateEntity<T>(
     id: number,
     updateEntityDto: UpdateExemploDto,
-    actionDoneBy?: Express.User,
+    actionDoneBy?: T,
   ): Promise<Exemplo>;
-  removeEntity(id: number, actionDoneBy?: Express.User): Promise<void>;
+
+  removeEntity<T>(id: number, actionDoneBy?: T): Promise<void>;
 }

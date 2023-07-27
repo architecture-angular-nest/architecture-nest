@@ -2,10 +2,10 @@ import { Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
 
 import { ExemploService } from './exemplo.service';
-import { ExemploController } from './exemplo.controller';
-import { Exemplo } from './entities/exemplo.entity';
-import { ExemploAudit } from './entities/exemplo-audit.entity';
 import { SharedModule } from 'src/shared/shared.module';
+import { ExemploController } from './exemplo.controller';
+import { Exemplo } from './entities/typeorm/exemplo.schema';
+import { ExemploAudit } from './entities/typeorm/exemplo-audit.schema';
 
 @Module({
   imports: [TypeOrmModule.forFeature([Exemplo, ExemploAudit]), SharedModule],
