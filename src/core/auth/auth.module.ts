@@ -7,9 +7,11 @@ import { AuthController } from './auth.controller';
 import { UserModule } from './../../user/user.module';
 import { LocalStrategy } from './strategies/local.strategy';
 import { JwtStrategy } from './strategies/jwt.strategy';
+import { CryptoModule } from '../infra/crypto/crypto.module';
 
 @Module({
   imports: [
+    CryptoModule,
     UserModule,
     JwtModule.register({
       secret: process.env.SECRET_TOKEN,

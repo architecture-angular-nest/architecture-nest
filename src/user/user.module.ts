@@ -1,5 +1,3 @@
-import { CryptoModule } from './../core/infra/crypto/crypto.module';
-import { Bcrypt } from '../core/infra/crypto/bcrypt/bcrypt';
 import { Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
 
