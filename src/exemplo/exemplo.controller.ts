@@ -255,7 +255,7 @@ export class ExemploController {
     @Res() res?: Response,
   ): Promise<Response<any, Record<string, any>>> {
     try {
-      const entity = await this.exemploService.findOneEntity(id);
+      const entity = await this.exemploService.findOneEntityById(id);
 
       return res.status(200).send(entity);
     } catch (error) {

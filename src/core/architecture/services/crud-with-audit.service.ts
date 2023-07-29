@@ -57,7 +57,7 @@ export abstract class CrudWithAuditService<
   }
 
   public async softDelete(
-    options: unknown,
+    options: Partial<CreateEntityDto>,
     actionDoneBy?: ID,
     actionDescription?: string,
   ): Promise<void> {
@@ -70,7 +70,7 @@ export abstract class CrudWithAuditService<
   }
 
   public async delete(
-    options: unknown,
+    options: Partial<CreateEntityDto>,
     actionDoneBy?: ID,
     actionDescription?: string,
   ): Promise<void> {

@@ -1,8 +1,8 @@
 import { Column, Entity } from 'typeorm';
-import { GeneralEntity } from './../../core/architecture/entities/typeorm/general-entity.entity';
+import { GeneralEntityTypeOrm } from './../../core/architecture/entities/typeorm/general-entity.entity';
 
 @Entity('users')
-export class User extends GeneralEntity {
+export class User extends GeneralEntityTypeOrm {
   @Column()
   name: string;
 

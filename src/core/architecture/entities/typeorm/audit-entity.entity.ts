@@ -1,7 +1,8 @@
 import { EntityId } from '../../types/enity-id.type';
 import { Column, PrimaryGeneratedColumn } from 'typeorm';
+import { AuditEntityBase } from '../audit-entity-base.entity';
 
-export class AuditEntity {
+export class AuditEntityTypeOrm implements AuditEntityBase {
   @PrimaryGeneratedColumn()
   id: EntityId;
 

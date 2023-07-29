@@ -10,11 +10,11 @@ import {
 import { EntityId } from '../../types/enity-id.type';
 import { PaginatedList } from '../../interfaces/paginated-list';
 import { CrudOperations } from '../../interfaces/crud-operations';
-import { GeneralEntity } from '../../entities/typeorm/general-entity.entity';
+import { GeneralEntityTypeOrm } from '../../entities/typeorm/general-entity.entity';
 import { UtilityService } from '../../../../shared/services/utility.service';
 
 export abstract class TypeOrmRepository<
-  Entity extends GeneralEntity,
+  Entity extends GeneralEntityTypeOrm,
   ID,
   CreateEntityDto,
 > implements CrudOperations<Entity, ID, CreateEntityDto>

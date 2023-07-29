@@ -18,14 +18,14 @@ export interface CrudOperations<Entity, ID, CreateEntityDto> {
     actionDescription?: string,
   ): Promise<Entity>;
 
-  softDelete<T>(
-    options: T,
+  softDelete(
+    options: Partial<CreateEntityDto>,
     actionDoneBy?: ID,
     actionDescription?: string,
   ): Promise<void>;
 
-  delete<T>(
-    options: T,
+  delete(
+    options: Partial<CreateEntityDto>,
     actionDoneBy?: ID,
     actionDescription?: string,
   ): Promise<void>;

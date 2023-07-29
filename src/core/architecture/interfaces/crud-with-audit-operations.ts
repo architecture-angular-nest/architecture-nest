@@ -1,5 +1,5 @@
-import { CrudOperations } from './crud-operations';
 import { PaginatedList } from './paginated-list';
+import { CrudOperations } from './crud-operations';
 
 export interface CrudWithAuditOperations<
   Entity,
@@ -15,14 +15,14 @@ export interface CrudWithAuditOperations<
     actionDescription?: string,
   ): Promise<Entity>;
 
-  softDelete<T>(
-    options: T,
+  softDelete(
+    options: Partial<CreateEntityDto>,
     actionDoneBy: ID,
     actionDescription?: string,
   ): Promise<void>;
 
-  delete<T>(
-    options: T,
+  delete(
+    options: Partial<CreateEntityDto>,
     actionDoneBy: ID,
     actionDescription?: string,
   ): Promise<void>;

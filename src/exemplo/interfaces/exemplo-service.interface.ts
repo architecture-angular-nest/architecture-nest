@@ -19,7 +19,7 @@ export interface IExemploService
 
   findAllEntity(): Promise<ExemploTypeOrm[]>;
 
-  findOneEntity(id?: number, options?: object): Promise<ExemploTypeOrm>;
+  findOneEntityById(id?: number, options?: object): Promise<ExemploTypeOrm>;
 
   updateEntity<T>(
     id: number,

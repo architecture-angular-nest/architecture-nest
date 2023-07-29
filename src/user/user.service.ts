@@ -3,9 +3,9 @@ import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import * as bcrypt from 'bcrypt';
 import { User } from './entities/user.entity';
 import { CreateUserDto } from './dto/create-user.dto';
+import { getRepository } from './repository/repository';
 import { UserAudit } from './entities/user-audit.entity';
 import { EntityId } from '../core/architecture/types/enity-id.type';
-import { getRepository } from './repository/repository';
 import { UtilityService } from './../shared/services/utility.service';
 import { CrudWithAuditService } from 'src/core/architecture/services/crud-with-audit.service';
 

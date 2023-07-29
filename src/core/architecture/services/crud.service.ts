@@ -1,5 +1,5 @@
-import { CrudOperations } from '../interfaces/crud-operations';
 import { PaginatedList } from '../interfaces/paginated-list';
+import { CrudOperations } from '../interfaces/crud-operations';
 
 export abstract class CrudService<Entity, ID, CreateEntityDto>
   implements CrudOperations<Entity, ID, CreateEntityDto>
@@ -15,17 +15,17 @@ export abstract class CrudService<Entity, ID, CreateEntityDto>
     actionDoneBy: ID,
   ): Promise<Entity> {
     const repository = await this.entityRepository;
-    return await repository.create(createEntityDto, actionDoneBy);
+    return repository.create(createEntityDto, actionDoneBy);
   }
 
   public async findOne(options?: unknown): Promise<Entity> {
     const repository = await this.entityRepository;
-    return await repository.findOne(options);
+    return repository.findOne(options);
   }
 
   public async find(options?: unknown): Promise<Entity[]> {
     const repository = await this.entityRepository;
-    return await repository.find(options);
+    return repository.find(options);
   }
 
   public async findWithPaginator(
@@ -33,7 +33,7 @@ export abstract class CrudService<Entity, ID, CreateEntityDto>
     limit: number,
   ): Promise<PaginatedList<Entity>> {
     const repository = await this.entityRepository;
-    return await repository.findWithPaginator(limit, page);
+    return repository.findWithPaginator(limit, page);
   }
 
   public async update(
@@ -42,32 +42,24 @@ export abstract class CrudService<Entity, ID, CreateEntityDto>
     actionDescription?: string,
   ): Promise<Entity> {
     const repository = await this.entityRepository;
-    return await repository.update(
-      updateEntityDto,
-      actionDoneBy,
-      actionDescription,
-    );
+    return repository.update(updateEntityDto, actionDoneBy, actionDescription);
   }
 
   public async softDelete(
-    options: unknown,
+    options: Partial<CreateEntityDto>,
     actionDoneBy?: ID,
     actionDescription?: string,
   ): Promise<void> {
     const repository = await this.entityRepository;
-    return await repository.softDelete(
-      options,
-      actionDoneBy,
-      actionDescription,
-    );
+    return repository.softDelete(options, actionDoneBy, actionDescription);
   }
 
   public async delete(
-    options: unknown,
+    options: Partial<CreateEntityDto>,
     actionDoneBy?: ID,
     actionDescription?: string,
   ): Promise<void> {
     const repository = await this.entityRepository;
-    return await repository.delete(options, actionDoneBy, actionDescription);
+    return repository.delete(options, actionDoneBy, actionDescription);
   }
 }

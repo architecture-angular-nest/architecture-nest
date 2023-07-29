@@ -1,8 +1,8 @@
 import { Body, Controller, Post, Res } from '@nestjs/common';
 
+import { Response } from 'express';
 import { UserService } from './user.service';
 import { CreateUserDto } from './dto/create-user.dto';
-import { Response } from 'express';
 import { CurrentUser } from 'src/core/auth/decorators/current-user.decorator';
 
 @Controller('user')

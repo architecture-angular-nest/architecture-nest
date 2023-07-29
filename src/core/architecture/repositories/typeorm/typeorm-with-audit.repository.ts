@@ -1,4 +1,5 @@
-import { HttpException, HttpStatus, Inject } from '@nestjs/common';
+import { InjectRepository } from '@nestjs/typeorm';
+import { HttpException, HttpStatus } from '@nestjs/common';
 
 import {
   DeepPartial,
@@ -13,26 +14,22 @@ import {
 } from 'typeorm';
 import { ActionAuditEnum } from '../../enums/action-audit.enum';
 import { PaginatedList } from '../../interfaces/paginated-list';
-import { AuditEntity } from '../../entities/typeorm/audit-entity.entity';
-import { GeneralEntity } from '../../entities/typeorm/general-entity.entity';
-import { UtilityService } from '../../../../shared/services/utility.service';
+import { GeneralEntityTypeOrm } from '../../entities/typeorm/general-entity.entity';
+import { AuditEntityTypeOrm } from '../../entities/typeorm/audit-entity.entity';
 import { CrudWithAuditOperations } from '../../interfaces/crud-with-audit-operations';
-import { InjectRepository } from '@nestjs/typeorm';
 
 export abstract class TypeOrmWithAuditRepository<
-  Entity extends GeneralEntity,
-  EntityToAudit extends AuditEntity,
+  Entity extends GeneralEntityTypeOrm,
+  EntityToAudit extends AuditEntityTypeOrm,
   ID,
   CreateEntityDto,
 > implements
     CrudWithAuditOperations<Entity, EntityToAudit, ID, CreateEntityDto>
 {
-  protected readonly utilityService: UtilityService = new UtilityService();
-
   constructor(
-    @InjectRepository(GeneralEntity)
+    @InjectRepository(GeneralEntityTypeOrm)
     protected entityRepository: Repository<Entity>,
-    @InjectRepository(AuditEntity)
+    @InjectRepository(AuditEntityTypeOrm)
     protected auditRepository: Repository<EntityToAudit>,
   ) {}
 
@@ -130,13 +127,15 @@ export abstract class TypeOrmWithAuditRepository<
   }
 
   public async softDelete(
-    options: FindOneOptions<Entity>,
+    options: Partial<CreateEntityDto>,
     actionDoneBy?: ID,
     actionDescription?: string,
   ): Promise<void> {
     return await this.entityRepository.manager.transaction(
       async (entityManager: EntityManager): Promise<void> => {
-        const entity: Entity = await this.entityRepository.findOne(options);
+        const entity: Entity = await this.entityRepository.findOne({
+          where: { ...options } as FindOptionsWhere<Entity>,
+        });
 
         if (!entity)
           throw new HttpException(
@@ -155,8 +154,7 @@ export abstract class TypeOrmWithAuditRepository<
         } as FindManyOptions<EntityToAudit>);
 
         entity.status = 'DELETED';
-        entity.deleted_at =
-          this.utilityService.returnStringDateWithBrazilianTimeZone();
+        entity.deleted_at = new Date();
         const newValue = await entityManager.save(entity);
         await this.logChange(
           ActionAuditEnum.SOFTDELETE,
@@ -175,13 +173,15 @@ export abstract class TypeOrmWithAuditRepository<
   }
 
   public async delete(
-    options: FindOneOptions<Entity>,
+    options: Partial<CreateEntityDto>,
     actionDoneBy?: ID,
     actionDescription?: string,
   ): Promise<void> {
     return await this.entityRepository.manager.transaction(
       async (entityManager: EntityManager): Promise<void> => {
-        const entity: Entity = await this.entityRepository.findOne(options);
+        const entity: Entity = await this.entityRepository.findOne({
+          where: { ...options } as FindOptionsWhere<Entity>,
+        });
 
         if (!entity)
           throw new HttpException(
@@ -268,8 +268,7 @@ export abstract class TypeOrmWithAuditRepository<
           oldValue: !!oldValue ? oldValue : null,
           newValue: !!newValue ? newValue : null,
           actionDescription: actionDescription,
-          timestamp:
-            this.utilityService?.returnStringDateWithBrazilianTimeZone(),
+          timestamp: new Date(),
         } as DeepPartial<EntityToAudit>);
         await entiyManager.save(entityAudit as EntityToAudit);
       },

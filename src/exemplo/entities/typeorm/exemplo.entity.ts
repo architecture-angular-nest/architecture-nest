@@ -1,9 +1,9 @@
-import { Column, Entity, PrimaryGeneratedColumn } from 'typeorm';
-import { GeneralEntity } from '../../../core/architecture/entities/typeorm/general-entity.entity';
 import { Exemplo } from '../exemplo';
+import { Column, Entity, PrimaryGeneratedColumn } from 'typeorm';
+import { GeneralEntityTypeOrm } from '../../../core/architecture/entities/typeorm/general-entity.entity';
 
 @Entity('exemplos')
-export class ExemploTypeOrm extends GeneralEntity implements Exemplo {
+export class ExemploTypeOrm extends GeneralEntityTypeOrm implements Exemplo {
   @PrimaryGeneratedColumn()
   id: number;
 
