@@ -103,9 +103,6 @@ export abstract class TypeOrmRepository<
           );
 
         entity.status = 'DELETED';
-        entity.deleted_by = actionDoneBy as EntityId;
-        entity.deleted_at =
-          this.utilityService.returnStringDateWithBrazilianTimeZone();
         await entityManager.save(entity);
       },
     );
