@@ -11,6 +11,8 @@ import { UtilityService } from './../shared/services/utility.service';
 import { UserAuditTypeOrm } from './entities/typeorm/user-audit.entity';
 import { IUserRepository } from './interfaces/user-repository.interface';
 import { ICryptography } from './../core/infra/crypto/interfaces/cryptography.interface';
+import { User } from './entities/user';
+import { UserAudit } from './entities/user-audit';
 
 @Module({
   imports: [
@@ -33,7 +35,7 @@ import { ICryptography } from './../core/infra/crypto/interfaces/cryptography.in
     {
       provide: UserService,
       useFactory: (
-        userRepository: IUserRepository<UserTypeOrm, UserAuditTypeOrm>,
+        userRepository: IUserRepository,
         utilityService: UtilityService,
         cryptography: ICryptography,
       ) => {

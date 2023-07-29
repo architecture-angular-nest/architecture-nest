@@ -1,30 +1,22 @@
-import { HttpException, HttpStatus, Inject, Injectable } from '@nestjs/common';
+import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
 
+import { User } from './entities/user';
+import { UserAudit } from './entities/user-audit';
 import { CreateUserDto } from './dto/create-user.dto';
-import { UserTypeOrm } from './entities/typeorm/user.entity';
 import { IUserService } from './interfaces/user-service.interface';
 import { EntityId } from '../core/architecture/types/enity-id.type';
 import { UtilityService } from './../shared/services/utility.service';
-import { UserAuditTypeOrm } from './entities/typeorm/user-audit.entity';
 import { IUserRepository } from './interfaces/user-repository.interface';
 import { ICryptography } from './../core/infra/crypto/interfaces/cryptography.interface';
 import { CrudWithAuditService } from 'src/core/architecture/services/crud-with-audit.service';
 
 @Injectable()
 export class UserService
-  extends CrudWithAuditService<
-    UserTypeOrm,
-    UserAuditTypeOrm,
-    EntityId,
-    CreateUserDto
-  >
+  extends CrudWithAuditService<User, UserAudit, EntityId, CreateUserDto>
   implements IUserService
 {
   constructor(
-    private readonly userRepository: IUserRepository<
-      UserTypeOrm,
-      UserAuditTypeOrm
-    >,
+    private readonly userRepository: IUserRepository,
     private readonly utilityService: UtilityService,
     private readonly cryptography: ICryptography,
   ) {
@@ -34,7 +26,7 @@ export class UserService
   public async createEntity(
     createEntityDto: CreateUserDto,
     actionDoneBy?: Express.User,
-  ): Promise<UserTypeOrm> {
+  ): Promise<User> {
     const emailUserAlreadyExists = await this.userRepository.findByEmail(
       createEntityDto.email.toLowerCase(),
     );
@@ -45,7 +37,7 @@ export class UserService
       );
     }
 
-    const createdUser: UserTypeOrm = await this.createEntity(
+    const createdUser: User = await this.createEntity(
       {
         ...createEntityDto,
         email: createEntityDto.email.toLowerCase(),
@@ -53,10 +45,10 @@ export class UserService
       },
       actionDoneBy['id'],
     );
-    const resturnedUser: UserTypeOrm =
+    const resturnedUser: User =
       this.utilityService.changeObjectNullValuesToUndefined(
         createdUser,
-      ) as UserTypeOrm;
+      ) as User;
 
     return {
       ...resturnedUser,

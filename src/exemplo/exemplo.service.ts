@@ -1,20 +1,20 @@
 import { Injectable } from '@nestjs/common';
 
+import { Exemplo } from './entities/exemplo';
 import { CreateExemploDto } from './dto/create-exemplo.dto';
 import { UpdateExemploDto } from './dto/update-exemplo.dto';
-import { ExemploTypeOrm } from './entities/typeorm/exemplo.entity';
 import { EntityId } from '../core/architecture/types/enity-id.type';
 import { IExemploService } from './interfaces/exemplo-service.interface';
-import { ExemploAuditTypeOrm } from './entities/typeorm/exemplo-audit.sentity';
 import { IExemploRepository } from './interfaces/exemplo-repository.interface';
 import { ActionAuditEnum } from './../core/architecture/enums/action-audit.enum';
 import { CrudWithAuditService } from 'src/core/architecture/services/crud-with-audit.service';
+import { ExemploAudit } from './entities/exemplo-audit';
 
 @Injectable()
 export class ExemploService
   extends CrudWithAuditService<
-    ExemploTypeOrm,
-    ExemploAuditTypeOrm,
+    Exemplo,
+    ExemploAudit,
     EntityId,
     CreateExemploDto
   >
@@ -27,15 +27,15 @@ export class ExemploService
   public createEntity<T>(
     createEntityDto: CreateExemploDto,
     actionDoneBy?: T,
-  ): Promise<ExemploTypeOrm> {
+  ): Promise<Exemplo> {
     return this.createEntity(createEntityDto, actionDoneBy['id']);
   }
 
-  public findAllEntity(): Promise<ExemploTypeOrm[]> {
+  public findAllEntity(): Promise<Exemplo[]> {
     return this.find();
   }
 
-  public findOneEntityById(id: number): Promise<ExemploTypeOrm> {
+  public findOneEntityById(id: number): Promise<Exemplo> {
     return this.exemploRepository.findOneEntityById(id);
   }
 
@@ -43,7 +43,7 @@ export class ExemploService
     id: number,
     updateEntityDto: UpdateExemploDto,
     actionDoneBy?: T,
-  ): Promise<ExemploTypeOrm> {
+  ): Promise<Exemplo> {
     return this.update(
       { id, ...updateEntityDto } as Partial<CreateExemploDto>,
       actionDoneBy['id'],

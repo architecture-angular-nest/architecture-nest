@@ -13,7 +13,7 @@ export class UserRepository
     EntityId,
     CreateUserDto
   >
-  implements IUserRepository<UserTypeOrm, UserAuditTypeOrm>
+  implements IUserRepository
 {
   constructor(
     protected readonly entityRepository: Repository<UserTypeOrm>,
