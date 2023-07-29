@@ -1,4 +1,5 @@
-import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
+import { ICryptography } from './../core/infra/crypto/interfaces/cryptography.interface';
+import { HttpException, HttpStatus, Inject, Injectable } from '@nestjs/common';
 
 import * as bcrypt from 'bcrypt';
 import { User } from './entities/user.entity';
@@ -16,7 +17,11 @@ export class UserService extends CrudWithAuditService<
   EntityId,
   CreateUserDto
 > {
-  constructor(private readonly utilityService: UtilityService) {
+  constructor(
+    private readonly utilityService: UtilityService,
+    @Inject('ICryptography')
+    private readonly cryptography: ICryptography,
+  ) {
     super(getRepository());
   }
 
@@ -39,7 +44,7 @@ export class UserService extends CrudWithAuditService<
       {
         ...createEntityDto,
         email: createEntityDto.email.toLowerCase(),
-        password: await bcrypt.hash(createEntityDto.password, 10),
+        password: await this.cryptography.hash(createEntityDto.password, 10),
       },
       actionDoneBy['id'],
     );
