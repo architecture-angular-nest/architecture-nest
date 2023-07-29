@@ -1,31 +1,31 @@
+import { Exemplo } from '../entities/exemplo';
+import { ExemploAudit } from '../entities/exemplo-audit';
 import { CreateExemploDto } from '../dto/create-exemplo.dto';
 import { UpdateExemploDto } from '../dto/update-exemplo.dto';
-import { ExemploTypeOrm } from '../entities/typeorm/exemplo.entity';
 import { EntityId } from 'src/core/architecture/types/enity-id';
-import { ExemploAuditTypeOrm } from '../entities/typeorm/exemplo-audit.sentity';
 import { CrudWithAuditOperations } from 'src/core/architecture/interfaces/crud-with-audit-operations';
 
 export interface IExemploService
   extends CrudWithAuditOperations<
-    ExemploTypeOrm,
-    ExemploAuditTypeOrm,
+    Exemplo,
+    ExemploAudit,
     EntityId,
     CreateExemploDto
   > {
   createEntity<T>(
     createEntityDto: CreateExemploDto,
     actionDoneBy?: T,
-  ): Promise<ExemploTypeOrm>;
+  ): Promise<Exemplo>;
 
-  findAllEntity(): Promise<ExemploTypeOrm[]>;
+  findAllEntity(): Promise<Exemplo[]>;
 
-  findOneEntityById(id?: number, options?: object): Promise<ExemploTypeOrm>;
+  findOneEntityById(id?: number, options?: object): Promise<Exemplo>;
 
   updateEntity<T>(
     id: number,
     updateEntityDto: UpdateExemploDto,
     actionDoneBy?: T,
-  ): Promise<ExemploTypeOrm>;
+  ): Promise<Exemplo>;
 
   removeEntity<T>(id: number, actionDoneBy?: T): Promise<void>;
 }

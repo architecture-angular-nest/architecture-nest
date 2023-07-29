@@ -1,36 +1,41 @@
-import { ICryptography } from './../core/infra/crypto/interfaces/cryptography.interface';
 import { HttpException, HttpStatus, Inject, Injectable } from '@nestjs/common';
 
-import * as bcrypt from 'bcrypt';
-import { User } from './entities/user.entity';
 import { CreateUserDto } from './dto/create-user.dto';
-import { getRepository } from './repository/repository';
-import { UserAudit } from './entities/user-audit.entity';
+import { UserTypeOrm } from './entities/typeorm/user.entity';
+import { IUserService } from './interfaces/user-service.interface';
 import { EntityId } from '../core/architecture/types/enity-id.type';
 import { UtilityService } from './../shared/services/utility.service';
+import { UserAuditTypeOrm } from './entities/typeorm/user-audit.entity';
+import { IUserRepository } from './interfaces/user-repository.interface';
+import { ICryptography } from './../core/infra/crypto/interfaces/cryptography.interface';
 import { CrudWithAuditService } from 'src/core/architecture/services/crud-with-audit.service';
 
 @Injectable()
-export class UserService extends CrudWithAuditService<
-  User,
-  UserAudit,
-  EntityId,
-  CreateUserDto
-> {
+export class UserService
+  extends CrudWithAuditService<
+    UserTypeOrm,
+    UserAuditTypeOrm,
+    EntityId,
+    CreateUserDto
+  >
+  implements IUserService
+{
   constructor(
+    private readonly userRepository: IUserRepository<
+      UserTypeOrm,
+      UserAuditTypeOrm
+    >,
     private readonly utilityService: UtilityService,
-    @Inject('ICryptography')
     private readonly cryptography: ICryptography,
   ) {
-    super(getRepository());
+    super(userRepository);
   }
 
   public async createEntity(
     createEntityDto: CreateUserDto,
     actionDoneBy?: Express.User,
-  ): Promise<User> {
-    const repository = await getRepository();
-    const emailUserAlreadyExists = await repository.findByEmail(
+  ): Promise<UserTypeOrm> {
+    const emailUserAlreadyExists = await this.userRepository.findByEmail(
       createEntityDto.email.toLowerCase(),
     );
     if (emailUserAlreadyExists) {
@@ -40,7 +45,7 @@ export class UserService extends CrudWithAuditService<
       );
     }
 
-    const createdUser: User = await this.createEntity(
+    const createdUser: UserTypeOrm = await this.createEntity(
       {
         ...createEntityDto,
         email: createEntityDto.email.toLowerCase(),
@@ -48,10 +53,10 @@ export class UserService extends CrudWithAuditService<
       },
       actionDoneBy['id'],
     );
-    const resturnedUser: User =
+    const resturnedUser: UserTypeOrm =
       this.utilityService.changeObjectNullValuesToUndefined(
         createdUser,
-      ) as User;
+      ) as UserTypeOrm;
 
     return {
       ...resturnedUser,
@@ -67,9 +72,8 @@ export class UserService extends CrudWithAuditService<
     Object.keys(fields).forEach((field: string, i: number) => {
       formatedFilds[`${fields[i]}`] = true;
     });
-    const repository = await getRepository();
 
-    return repository.findOneWithEspacificFildsByEmail(
+    return this.userRepository.findOneWithEspacificFildsByEmail(
       formatedFilds,
       email.toLowerCase(),
     );

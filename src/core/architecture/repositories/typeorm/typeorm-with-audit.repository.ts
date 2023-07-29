@@ -27,9 +27,7 @@ export abstract class TypeOrmWithAuditRepository<
     CrudWithAuditOperations<Entity, EntityToAudit, ID, CreateEntityDto>
 {
   constructor(
-    @InjectRepository(GeneralEntityTypeOrm)
     protected entityRepository: Repository<Entity>,
-    @InjectRepository(AuditEntityTypeOrm)
     protected auditRepository: Repository<EntityToAudit>,
   ) {}
 

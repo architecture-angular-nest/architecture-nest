@@ -1,40 +1,28 @@
 import { Repository } from 'typeorm';
-import dataSource from 'src/core/infra/database/data-source';
-import { User } from '../entities/user.entity';
 import { CreateUserDto } from '../dto/create-user.dto';
-import { UserAudit } from '../entities/user-audit.entity';
+import { UserTypeOrm } from '../entities/typeorm/user.entity';
 import { EntityId } from '../../core/architecture/types/enity-id.type';
+import { UserAuditTypeOrm } from '../entities/typeorm/user-audit.entity';
+import { IUserRepository } from '../interfaces/user-repository.interface';
 import { TypeOrmWithAuditRepository } from '../../core/architecture/repositories/typeorm/typeorm-with-audit.repository';
-class UserRepositoryWithAudit extends TypeOrmWithAuditRepository<
-  User,
-  UserAudit,
-  EntityId,
-  CreateUserDto
-> {
-  public static instance: UserRepositoryWithAudit | null = null;
 
-  private constructor(
-    protected readonly entityRepository: Repository<User>,
-    protected readonly auditRepository: Repository<UserAudit>,
+export class UserRepository
+  extends TypeOrmWithAuditRepository<
+    UserTypeOrm,
+    UserAuditTypeOrm,
+    EntityId,
+    CreateUserDto
+  >
+  implements IUserRepository<UserTypeOrm, UserAuditTypeOrm>
+{
+  constructor(
+    protected readonly entityRepository: Repository<UserTypeOrm>,
+    protected readonly auditRepository: Repository<UserAuditTypeOrm>,
   ) {
     super(entityRepository, auditRepository);
   }
 
-  static createInstance(
-    entityRepository: Repository<User>,
-    auditRepository: Repository<UserAudit>,
-  ): UserRepositoryWithAudit {
-    if (!UserRepositoryWithAudit.instance) {
-      UserRepositoryWithAudit.instance = new UserRepositoryWithAudit(
-        entityRepository,
-        auditRepository,
-      );
-    }
-
-    return this.instance;
-  }
-
-  public findByEmail(email: string): Promise<User> {
+  public findByEmail(email: string): Promise<UserTypeOrm> {
     return this.findOne({
       where: { email: email.toLowerCase() },
     });
@@ -42,7 +30,7 @@ class UserRepositoryWithAudit extends TypeOrmWithAuditRepository<
   public findOneWithEspacificFildsByEmail(
     fields: object,
     email: string,
-  ): Promise<User> {
+  ): Promise<UserTypeOrm> {
     return this.findOne({
       select: {
         ...fields,
@@ -51,18 +39,3 @@ class UserRepositoryWithAudit extends TypeOrmWithAuditRepository<
     });
   }
 }
-
-export const getRepository = async () => {
-  const dS = await dataSource;
-  if (!UserRepositoryWithAudit.instance) {
-    const entityRepository: Repository<User> = dS.getRepository(User);
-    const auditRepository: Repository<UserAudit> = dS.getRepository(UserAudit);
-
-    return UserRepositoryWithAudit.createInstance(
-      entityRepository,
-      auditRepository,
-    );
-  }
-
-  return UserRepositoryWithAudit.instance;
-};

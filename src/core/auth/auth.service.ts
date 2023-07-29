@@ -5,7 +5,7 @@ import { JwtService } from '@nestjs/jwt';
 import { UserToken } from './models/user-token';
 import { UserPayload } from './models/user-payload';
 import { UserService } from './../../user/user.service';
-import { User } from './../../user/entities/user.entity';
+import { User } from '../../user/entities/user';
 import { ICryptography } from '../infra/crypto/interfaces/cryptography.interface';
 
 @Injectable()
