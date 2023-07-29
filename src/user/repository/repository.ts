@@ -1,5 +1,5 @@
 import { Repository } from 'typeorm';
-import dataSource from 'src/core/architecture/database/data-source';
+import dataSource from 'src/core/infra/database/data-source';
 import { User } from '../entities/user.entity';
 import { CreateUserDto } from '../dto/create-user.dto';
 import { UserAudit } from '../entities/user-audit.entity';
