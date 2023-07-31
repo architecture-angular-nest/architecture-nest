@@ -1,19 +1,18 @@
-import { HttpException, HttpStatus, Inject, Injectable } from '@nestjs/common';
+import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
 
 import * as dotenv from 'dotenv';
 import { JwtService } from '@nestjs/jwt';
 import { UserToken } from './models/user-token';
-import { UserPayload } from './models/user-payload';
-import { UserService } from './../../user/user.service';
 import { User } from '../../user/entities/user';
+import { UserPayload } from './models/user-payload';
+import { IUserService } from './../../user/interfaces/user-service.interface';
 import { ICryptography } from '../infra/crypto/interfaces/cryptography.interface';
 
 @Injectable()
 export class AuthService {
   constructor(
-    private readonly userService: UserService,
+    private readonly userService: IUserService,
     private readonly jwtService: JwtService,
-    @Inject('ICryptography')
     private readonly cryptography: ICryptography,
   ) {}
 

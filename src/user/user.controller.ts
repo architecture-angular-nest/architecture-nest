@@ -1,13 +1,13 @@
 import { Body, Controller, Post, Res } from '@nestjs/common';
 
 import { Response } from 'express';
-import { UserService } from './user.service';
 import { CreateUserDto } from './dto/create-user.dto';
 import { CurrentUser } from 'src/core/auth/decorators/current-user.decorator';
+import { IUserService } from './interfaces/user-service.interface';
 
 @Controller('user')
 export class UserController {
-  constructor(private readonly userService: UserService) {}
+  constructor(private readonly userService: IUserService) {}
 
   @Post()
   public async create(

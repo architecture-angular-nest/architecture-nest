@@ -1,30 +1,33 @@
 import { PaginatedList } from './paginated-list';
 
-export interface CrudOperations<Entity, ID, CreateEntityDto> {
-  create(createEntityDto: CreateEntityDto, actionDoneBy?: ID): Promise<Entity>;
+export abstract class CrudOperations<Entity, ID, CreateEntityDto> {
+  abstract create(
+    createEntityDto: CreateEntityDto,
+    actionDoneBy?: ID,
+  ): Promise<Entity>;
 
-  findOne<T>(options?: T): Promise<Entity>;
+  abstract findOne<T>(options?: T): Promise<Entity>;
 
-  find<T>(options?: T): Promise<Entity[]>;
+  abstract find<T>(options?: T): Promise<Entity[]>;
 
-  findWithPaginator(
+  abstract findWithPaginator(
     page: number,
     limit: number,
   ): Promise<PaginatedList<Entity>>;
 
-  update(
+  abstract update(
     updateEntityDto: Partial<CreateEntityDto>,
     actionDoneBy?: ID,
     actionDescription?: string,
   ): Promise<Entity>;
 
-  softDelete(
+  abstract softDelete(
     options: Partial<CreateEntityDto>,
     actionDoneBy?: ID,
     actionDescription?: string,
   ): Promise<void>;
 
-  delete(
+  abstract delete(
     options: Partial<CreateEntityDto>,
     actionDoneBy?: ID,
     actionDescription?: string,

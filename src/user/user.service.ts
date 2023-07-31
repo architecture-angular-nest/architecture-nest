@@ -5,7 +5,6 @@ import { UserAudit } from './entities/user-audit';
 import { CreateUserDto } from './dto/create-user.dto';
 import { IUserService } from './interfaces/user-service.interface';
 import { EntityId } from '../core/architecture/types/enity-id.type';
-import { UtilityService } from './../shared/services/utility.service';
 import { IUserRepository } from './interfaces/user-repository.interface';
 import { ICryptography } from './../core/infra/crypto/interfaces/cryptography.interface';
 import { CrudWithAuditService } from 'src/core/architecture/services/crud-with-audit.service';
@@ -17,7 +16,6 @@ export class UserService
 {
   constructor(
     private readonly userRepository: IUserRepository,
-    private readonly utilityService: UtilityService,
     private readonly cryptography: ICryptography,
   ) {
     super(userRepository);
@@ -45,13 +43,9 @@ export class UserService
       },
       actionDoneBy['id'],
     );
-    const resturnedUser: User =
-      this.utilityService.changeObjectNullValuesToUndefined(
-        createdUser,
-      ) as User;
 
     return {
-      ...resturnedUser,
+      ...createdUser,
       password: undefined,
     };
   }

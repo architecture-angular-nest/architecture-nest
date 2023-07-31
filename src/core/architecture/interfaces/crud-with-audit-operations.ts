@@ -1,39 +1,42 @@
 import { PaginatedList } from './paginated-list';
 import { CrudOperations } from './crud-operations';
 
-export interface CrudWithAuditOperations<
+export abstract class CrudWithAuditOperations<
   Entity,
   EntityToAudit,
   ID,
   CreateEntityDto,
 > extends CrudOperations<Entity, ID, CreateEntityDto> {
-  create(createEntityDto: CreateEntityDto, actionDoneBy: ID): Promise<Entity>;
+  abstract create(
+    createEntityDto: CreateEntityDto,
+    actionDoneBy: ID,
+  ): Promise<Entity>;
 
-  update(
+  abstract update(
     updateEntityDto: Partial<CreateEntityDto>,
     actionDoneBy: ID,
     actionDescription?: string,
   ): Promise<Entity>;
 
-  softDelete(
+  abstract softDelete(
     options: Partial<CreateEntityDto>,
     actionDoneBy: ID,
     actionDescription?: string,
   ): Promise<void>;
 
-  delete(
+  abstract delete(
     options: Partial<CreateEntityDto>,
     actionDoneBy: ID,
     actionDescription?: string,
   ): Promise<void>;
 
-  restore<T>(
+  abstract restore<T>(
     options: T,
     actionDoneBy: ID,
     actionDescription?: string,
   ): Promise<Entity>;
 
-  logChange(
+  abstract logChange(
     action: string,
     actionDoneBy: ID,
     entityId: number,
@@ -42,19 +45,25 @@ export interface CrudWithAuditOperations<
     actionDescription?: string,
   ): Promise<void>;
 
-  findAuditEntities<T>(options?: T): Promise<EntityToAudit[]>;
+  abstract findAuditEntities<T>(options?: T): Promise<EntityToAudit[]>;
 
-  findOneEntityLogsWithPaginator(
+  abstract findOneEntityLogsWithPaginator(
     entityId: ID,
     page: number,
     limit: number,
   ): Promise<PaginatedList<EntityToAudit>>;
 
-  findOneEntityLogs(entityId: ID): Promise<EntityToAudit[]>;
+  abstract findOneEntityLogs(entityId: ID): Promise<EntityToAudit[]>;
 
-  findEntityLogsWithPaginator(page: number, limit: number): Promise<any>;
+  abstract findEntityLogsWithPaginator(
+    page: number,
+    limit: number,
+  ): Promise<any>;
 
-  findEntityLogs(argument?: object): Promise<EntityToAudit[]>;
+  abstract findEntityLogs(argument?: object): Promise<EntityToAudit[]>;
 
-  undoLastChange(entityId: ID, actionDoneBy?: ID): Promise<void | Entity>;
+  abstract undoLastChange(
+    entityId: ID,
+    actionDoneBy?: ID,
+  ): Promise<void | Entity>;
 }

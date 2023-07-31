@@ -7,12 +7,9 @@ import { UserController } from './user.controller';
 import { SharedModule } from './../shared/shared.module';
 import { UserRepository } from './repository/repository';
 import { UserTypeOrm } from './entities/typeorm/user.entity';
-import { UtilityService } from './../shared/services/utility.service';
+import { IUserService } from './interfaces/user-service.interface';
 import { UserAuditTypeOrm } from './entities/typeorm/user-audit.entity';
 import { IUserRepository } from './interfaces/user-repository.interface';
-import { ICryptography } from './../core/infra/crypto/interfaces/cryptography.interface';
-import { User } from './entities/user';
-import { UserAudit } from './entities/user-audit';
 
 @Module({
   imports: [
@@ -21,9 +18,8 @@ import { UserAudit } from './entities/user-audit';
   ],
   controllers: [UserController],
   providers: [
-    UserService,
     {
-      provide: UserRepository,
+      provide: IUserRepository,
       useFactory: (dataSource: DataSource) => {
         return new UserRepository(
           dataSource.getRepository(UserTypeOrm),
@@ -33,17 +29,15 @@ import { UserAudit } from './entities/user-audit';
       inject: [getDataSourceToken()],
     },
     {
-      provide: UserService,
-      useFactory: (
-        userRepository: IUserRepository,
-        utilityService: UtilityService,
-        cryptography: ICryptography,
-      ) => {
-        return new UserService(userRepository, utilityService, cryptography);
-      },
-      inject: [UserRepository, UtilityService, 'ICryptography'],
+      provide: IUserService,
+      useClass: UserService,
     },
   ],
-  exports: [UserService],
+  exports: [
+    {
+      provide: IUserService,
+      useClass: UserService,
+    },
+  ],
 })
 export class UserModule {}
