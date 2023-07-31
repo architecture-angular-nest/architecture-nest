@@ -9,6 +9,7 @@ import { ExemploAuditTypeOrm } from './entities/typeorm/exemplo-audit.sentity';
 import { DataSource } from 'typeorm';
 import { ExemploRepository } from './repository/repository';
 import { IExemploRepository } from './interfaces/exemplo-repository.interface';
+import { IExemploService } from './interfaces/exemplo-service.interface';
 
 @Module({
   imports: [
@@ -19,7 +20,7 @@ import { IExemploRepository } from './interfaces/exemplo-repository.interface';
   providers: [
     ExemploService,
     {
-      provide: ExemploRepository,
+      provide: IExemploRepository,
       useFactory: (dataSource: DataSource) => {
         return ExemploRepository.createInstance(
           dataSource.getRepository(ExemploTypeOrm),
@@ -29,11 +30,8 @@ import { IExemploRepository } from './interfaces/exemplo-repository.interface';
       inject: [getDataSourceToken()],
     },
     {
-      provide: ExemploService,
-      useFactory: (exemploRepository: IExemploRepository) => {
-        return new ExemploService(exemploRepository);
-      },
-      inject: [ExemploRepository],
+      provide: IExemploService,
+      useClass: ExemploService,
     },
   ],
 })

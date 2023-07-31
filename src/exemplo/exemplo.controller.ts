@@ -12,12 +12,12 @@ import {
 
 import { Response } from 'express';
 import { CreateExemploDto } from './dto/create-exemplo.dto';
-import { ExemploService } from './exemplo.service';
+import { IExemploService } from './interfaces/exemplo-service.interface';
 import { CurrentUser } from 'src/core/auth/decorators/current-user.decorator';
 
 @Controller('exemplo')
 export class ExemploController {
-  constructor(private readonly exemploService: ExemploService) {}
+  constructor(private readonly exemploService: IExemploService) {}
 
   @Post()
   public async create(

@@ -21,7 +21,7 @@ import { IUserRepository } from './interfaces/user-repository.interface';
     {
       provide: IUserRepository,
       useFactory: (dataSource: DataSource) => {
-        return new UserRepository(
+        return UserRepository.createInstance(
           dataSource.getRepository(UserTypeOrm),
           dataSource.getRepository(UserAuditTypeOrm),
         );

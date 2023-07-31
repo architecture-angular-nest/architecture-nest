@@ -15,11 +15,27 @@ export class UserRepository
   >
   implements IUserRepository
 {
-  constructor(
+  public static instance: UserRepository | null = null;
+
+  private constructor(
     protected readonly entityRepository: Repository<UserTypeOrm>,
     protected readonly auditRepository: Repository<UserAuditTypeOrm>,
   ) {
     super(entityRepository, auditRepository);
+  }
+
+  public static createInstance(
+    entityRepository: Repository<UserTypeOrm>,
+    auditRepository: Repository<UserAuditTypeOrm>,
+  ): UserRepository {
+    if (!UserRepository.instance) {
+      UserRepository.instance = new UserRepository(
+        entityRepository,
+        auditRepository,
+      );
+    }
+
+    return this.instance;
   }
 
   public findByEmail(email: string): Promise<UserTypeOrm> {
